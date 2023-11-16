@@ -9,3 +9,4 @@ Following components are available for copy
 6. .env.local file in root folder.
 7. firebase.config.js inside Firebase folder.
 8. error.jsx inside pages inside ErrorPage folder.
+9. login.jsx inside pages inside Login folder.
