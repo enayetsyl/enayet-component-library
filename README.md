@@ -10,3 +10,4 @@ Following components are available for copy
 7. firebase.config.js inside Firebase folder.
 8. error.jsx inside pages inside ErrorPage folder.
 9. login.jsx inside pages inside Login folder.
+10. register.jsx inside pages inside Register folder.
