@@ -13,3 +13,4 @@ Following components are available for copy
 10. register.jsx inside pages inside Register folder.
 11. CardOne.jsx inside pages inside ProductCard folder.
 12. CardTwo.jsx inside pages inside ProductCard folder.
+13. ButtonOne.jsx inside Buttons folder.
