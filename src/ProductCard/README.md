@@ -1,1 +1,2 @@
-![card one image](1.jpg)
+![card one image](CardOneImage.png)
+![card two image](CardTwoImage.png)

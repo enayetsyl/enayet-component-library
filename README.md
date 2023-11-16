@@ -12,3 +12,4 @@ Following components are available for copy
 9. login.jsx inside pages inside Login folder.
 10. register.jsx inside pages inside Register folder.
 11. CardOne.jsx inside pages inside ProductCard folder.
+12. CardTwo.jsx inside pages inside ProductCard folder.
