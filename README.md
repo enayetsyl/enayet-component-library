@@ -11,3 +11,4 @@ Following components are available for copy
 8. error.jsx inside pages inside ErrorPage folder.
 9. login.jsx inside pages inside Login folder.
 10. register.jsx inside pages inside Register folder.
+11. CardOne.jsx inside pages inside ProductCard folder.
