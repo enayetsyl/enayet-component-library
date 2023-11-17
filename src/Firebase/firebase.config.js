@@ -20,3 +20,4 @@ export default app;
 
 // when name the file start with small f
 // config .env.local file also
+// make sure to enable sign in method in the firebase console
