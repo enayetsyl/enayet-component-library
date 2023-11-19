@@ -16,3 +16,4 @@ Following components are available for copy
 13. ButtonOne.jsx inside Buttons folder.
 14. ButtonTwo.jsx inside Buttons folder.
 15. ButtonThree.jsx inside Buttons folder.
+16. useAuthBasic.jsx inside hooks folder.
