@@ -7,7 +7,7 @@ import { useContext } from "react";
 
 const Login = () => {
 
-  const { userLogin, googleLogin, setUserName, setUserPhoto} = useContext(AuthContext)  //import necessary item here.
+  const { signInUser, googleSignIn, setUserName, setUserPhoto} = useContext(AuthContext)  //import necessary item here.
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const Login = () => {
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    userLogin(email, password)
+    signInUser(email, password)
     .then(result => {
       if(result.user){
         swal("Congratulation!", "Your login successful!", "success")
@@ -32,7 +32,7 @@ const Login = () => {
 
   const handleGoogleSignIn = e => {
     e.preventDefault();
-    googleLogin()
+    googleSignIn()
     .then(result => {
       if(result.user){
         swal("Congratulation!", "Your login successful!", "success");
