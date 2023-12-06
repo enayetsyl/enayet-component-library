@@ -11,3 +11,5 @@ const useAuth = () => {
 };
 
 export default useAuth;
+
+// change the import folder of AuthContext if necessary
