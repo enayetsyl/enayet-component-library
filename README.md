@@ -17,3 +17,6 @@ Following components are available for copy
 14. ButtonTwo.jsx inside Buttons folder.
 15. ButtonThree.jsx inside Buttons folder.
 16. useAuthBasic.jsx inside hooks folder.
+17. Modular server setup md file.
+18. Basic infinite scroll md file.
+19. Tanstack infinite scroll md file. 
