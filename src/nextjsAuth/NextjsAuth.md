@@ -7,6 +7,11 @@
 - Adding shadcn-ui button component
 - Detail about app router
 - Installing next auth
+- Using callback function to apply role based authentication
+- Github oAuth setup
+- Google oAuth setup
+- Email verification for credential users
+- Next js smooth image load
 
 ### Creating a next project
 - Open VS code and open terminal and write following code and press enter
@@ -153,3 +158,162 @@ export const config = {
 - With the above matcher, all routes will invoke auth function, with the exception of internal /_next/ routes and static files. Static files are detected by matching on paths that end in .+\..+. Then inside the auth function we can decide which route should be protected and which route should not. 
 
 - One policy for protecting is that initially the whole app will be protected and some route like landing page, documentation etc will be public.
+
+
+- In the root create a file name route.js/route.ts and paste following code.
+```javascript
+/**
+ * An array of routes that are accessible to the public
+ * These routes do not require authentication
+ * @type {string[]}
+ */
+export const publicRoutes = [
+  "/",
+  "/auth/new-verification"
+];
+
+/**
+ * An array of routes that are used for authentication
+ * These routes will redirect logged in users to /settings
+ * @type {string[]}
+ */
+export const authRoutes = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/error",
+  "/auth/reset",
+  "/auth/new-password"
+];
+
+/**
+ * The prefix for API authentication routes
+ * Routes that start with this prefix are used for API authentication purposes
+ * @type {string}
+ */
+export const apiAuthPrefix = "/api/auth";
+
+/**
+ * The default redirect path after logging in
+ * @type {string}
+ */
+export const DEFAULT_LOGIN_REDIRECT = "/settings";
+```
+
+- publicRoutes array contains routes that anyone can access without authorization. authRoutes contains routes that are necessary for authorization and logged in user cannot go to these routes. apiAuthPrefix are used for api authentication purpose so must be public. DEFAULT_LOGIN_REDIRECT is the route where user will be redirected after successful logging in. 
+
+- Inside the middleware file the auth function will be as follows
+
+```javascript
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
+
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuthRoute) {
+    return null;
+  }
+
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+    }
+    return null;
+  }
+
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL("/auth/login", nextUrl))
+  }
+
+  return null;
+})
+```
+
+- Above code from req the nextUrl is getting. Then checked whether user is logged in. Then apiAuthRoute, publicRoute, authRoute is created. Then first if condition checked whether user clicked route is apiAuthRoute. If it is then it return null means do nothing and allow user to access the route. Second if condition check whether user is in authRoute. If user is in authRoute then it check whether user is logged in. If user is logged in then it redirect user to the DEFAULT_LOGIN_REDIRECT page otherwise it allow user to visit the page. Third if statement check whether user is not logged in and also user is not in public route. if it is true it redirect user to the login page. If any of the condition is not met that means user is logged in and user in the protected route and it allow user to visit that page. 
+
+### Using callback function to apply role based authentication
+
+- Details is describe in the following link video https://www.youtube.com/watch?v=1MTyCvS05V4&t=18s the time line is 02.50.53 to 03.20.33 min
+
+### Github oAuth setup
+
+- Go to the .env file and write GITHUB_CLIENT_ID= & GITHUB_CLIENT_SECRET= 
+- Go to github, click the profile icon, in the side bar click settings, on the left nav bar at the bottom click Developer settings, on the left side bar click OAuth Apps, On the right side click New OAuth App button, write the application name, in the Homepage URL input field write http://localhost:3000 and don't write / after 3000. In the Authorization callback URL input field write http://localhost:3000/api/auth/callback/github, then click Register application button. You will get client id there, copy it and paste it in the .env file. Then click Generate a new client secret button, copy the secret and paste it in .env file. 
+
+- Go to the auth.js/auth.ts file and go to following code 
+```javascript
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth({
+  providers: [GitHub],
+})
+```
+- Modify the Github as follows
+```javascript
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth({
+  providers: [
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,     
+    })
+    ],
+})
+```
+
+### Google oAuth setup
+
+- Go to the .env file and write GOOGLE_CLIENT_ID= & GOOGLE_CLIENT_SECRET= 
+
+- Go to browser and type console.cloud.google.com, click link, at the top click the Select a project dropdown menu, click on NEW PROJECT button, in the Project Name input field write the project name and click CREATE button. After the creation of project, select the project. Click the search button and type api & services and click it. On the left side bar click OAuth concent screen and select External radio button and click CREATE button. In the app name field write the app name and in the User support email select your email. in the Developer contact information section in the input field write the email address and click Save and continue button. In the next page also click save and continue button. In the next page also click save and continue button. Now at the left side bar click Credentials. Click CREATE CREDENTIALS button. Then click OAuth client ID. In the Application type input field select Web Application. In the Authorized JavaScript origins write http://localhost:3000 and in the Authorized redirect URIs write http://localhost:3000/api/auth/callback/google. Click CREATE button. In a modal you will see client ID and Client secret. Copy them and paste in the .env file. 
+
+- Go to the auth.js/auth.ts file and go to following code 
+```javascript
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth({
+  providers: [GitHub],
+})
+```
+- Modify the Github as follows
+```javascript
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth({
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,     
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,     
+    })
+    ],
+})
+```
+
+### Email verification for credential users
+
+- Go to the following youtube link https://www.youtube.com/watch?v=1MTyCvS05V4&t=18s check from 03.47.58 to 4.48.11 min;
+
+### Next js smooth image load
+
+- Check the following Image tag and our focus is last two lines of code.
+```javascript
+<Image
+src={`http://pri....`}
+alt="hello"
+width={600}
+height={400}
+className= "transition-opacity opacity-0 duration-[2s]"
+onLoadingComplete = {(image) => image.classList.remove("opacity-0")}
+/>
+```
