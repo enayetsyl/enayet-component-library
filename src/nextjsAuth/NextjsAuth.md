@@ -193,7 +193,7 @@ export const POST = async (req) => {
       return new NextResponse("Email is already in use", {status: 400})
     }
 
-  const hashedPassword = await bcrypt.hash(password, 10)'
+  const hashedPassword = await bcrypt.hash(password, 10)
   
     const newUser = new User({
       name, email,
