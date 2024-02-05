@@ -666,7 +666,7 @@ export const config = {matcher: ["/client/:path*", "/register", "/login"]}
 
 - We imported NextResponse from next/server to send response. 
 
-- Next is a custom middleware function that takes request parameter. Don't change request name. 
+- Next is a custom middleware function that take "request" as a parameter. Don't change request name. 
 
 - path variable collect pathname from nextUrl which is inside request. So you can track in which route the user is located. 
 
@@ -698,7 +698,7 @@ const AuthProvider = ({children}) => {
 
 export default AuthProvider;
 ```
-- Session provider must be a client component so we wrote "use client" at the top of the component to make it client component. 
+- Session provider must be a client component so we use "use client" at the top of the component to make it a client component. 
 - Then we imported SessionProvider from next-auth.
 
 - Then we created a function named AuthProvider and passed children as parameter. You can change the function name to anything you want.
@@ -764,7 +764,7 @@ export default Login
 
 - Here authOption is imported from auth api route to get session data. getServerSession is imported from next-auth to get session data.
 
-- The Login function is converted to async as we will interact with server. 
+- The Login function is marked as async as we will interact with server. 
 
 - We call the getServerSession function and passed authOptions as a parameter of it and hold the value inside session variable. 
 
@@ -821,6 +821,17 @@ export default ClientPage
 
 - There is a conditional statement where if session.data.user has an image then a Image tag is show the image. 
 
+
+
+
+<!-- --------------------------------------------- 
+
+
+
+
+---------------------------------------------
+
+-->
 ### Image config in next.js
 
 - In order to show image in next.js using a link we have to put the domain name in the next.config.mjs file which is located at the root of the project. Check the following code
