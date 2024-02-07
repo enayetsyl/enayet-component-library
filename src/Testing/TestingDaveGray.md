@@ -419,13 +419,22 @@ describe('Home', () => {
 
 
 # React Testing Library and Jest in Next.js & React project: Intermediate Guide
-
+- Clone the following git repo in your pc by putting following command in the command prompt or terminal of vs code
 ```javascript
-
+git clone https://github.com/gitdagray/next-testing-intro.git
 ```
+- Then go to the next-testing-intro folder and type npm i and press enter. 
+
+- Go to the src folder and create a new folder name types. Create a new file name Todo.ts. In this file we will keep out typescript types. Paste the following code in the file
 ```javascript
-
+export type Todo = {
+    userId: number,
+    id: number,
+    title: string,
+    completed: boolean,
+}
 ```
+- In our todo app we will have four thing. userId and id which will be number, title will be string and completed will boolean. 
 ```javascript
 
 ```
