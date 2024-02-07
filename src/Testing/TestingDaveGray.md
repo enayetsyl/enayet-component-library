@@ -744,33 +744,310 @@ export default function Navbar() {
 - Inside the AddTodo folder create a new folder named with __tests__ and inside that folder create a new file with the name of AddTodo.test.tsx and paste the following code inside that file.
 
 ```javascript
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import AddItemForm from '../AddTodo'
 
+const mockSetTodos = jest.fn()
+
+describe('AddTodo', () => {
+
+    describe('Render', () => {
+
+        it('should render the input', () => {
+            render(<AddItemForm setTodos={mockSetTodos} />) // ARRANGE
+
+            const input = screen.getByPlaceholderText('New Todo') //ACT
+
+            expect(input).toBeInTheDocument()// ASSERT
+        })
+
+        it('should render a disabled submit button', () => {
+            render(<AddItemForm setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const button = screen.getByRole('button', {
+                name: 'Submit'
+            })
+
+            expect(button).toBeDisabled()// ASSERT
+        })
+
+    })
+
+    describe('Behavior', () => {
+
+        it('should be able to add text to the input', async () => {
+            render(<AddItemForm setTodos={mockSetTodos} />) // ARRANGE
+
+            const input = screen.getByPlaceholderText('New Todo') //ACT
+            await userEvent.type(input, 'hey there')
+            expect(input).toHaveValue("hey there")// ASSERT
+        })
+
+        it('should enable the submit button when text is input', async () => {
+            render(<AddItemForm setTodos={mockSetTodos} />) // ARRANGE
+
+            const input = screen.getByPlaceholderText('New Todo') //ACT
+            await userEvent.type(input, 'hey there')
+
+            const button = screen.getByRole('button', {
+                name: 'Submit'
+            })
+
+            expect(button).toBeEnabled() // ASSERT
+        })
+
+        it('should empty the text input when submitted', async () => {
+            render(<AddItemForm setTodos={mockSetTodos} />) // ARRANGE
+
+            const input = screen.getByPlaceholderText('New Todo') //ACT
+            await userEvent.type(input, 'hey there')
+            const button = screen.getByRole('button', {
+                name: 'Submit'
+            })
+            await userEvent.click(button)
+
+            expect(input).toHaveValue("")// ASSERT
+        })
+
+        it('should call setTodos when submitted', async () => {
+            render(<AddItemForm setTodos={mockSetTodos} />) // ARRANGE
+
+            const input = screen.getByPlaceholderText('New Todo') //ACT
+            await userEvent.type(input, 'hey there')
+            const button = screen.getByRole('button', {
+                name: 'Submit'
+            })
+            await userEvent.click(button)
+
+            expect(mockSetTodos).toBeCalled()// ASSERT
+        })
+
+    })
+})
 ```
+
+- You may get "userEvent.type is sync and does not need await operator" error by eslint. You can ignore it. 
+
+- At the beginning we imported render and screen from testing library. 
+
+- Then we imported userEvent. This kind of simulates a user. It can actually trigger more than one event. Using the user event is more like what you would see from a user. This is not the same as end-to-end testing but at the same time it can uncover some things that might be unexpected otherwise using user event is a good idea.
+
+- And the last import is AddItemForm component on which the test will be made. 
+
+- I've got a mockSetTodo here because we're testing this in isolation and then I need a mockSetTodo's as well because this component receives both the to do and setTodo's. So this mockSetTodo's you can use jest.FN which stands for function and that can just be a mock function. We're not really looking for how the setToDo's works but we can confirm that it is called .
+
+- Generally there is a describe function inside a test suite. But in this component i want to perform two types of tests, Render and Behavior. So inside the main describe function there are two describe function. First one is for Render where I'm checking how things should render and second one is for Behavior this is where I expect how some of the things in the component to behave. Inside each there are several tests. 
+
+- The first test inside render is to test whether the component render a input. We should be able to get that input tag by looking for the placeholder text that is a 'New Todo' and we expect it to be in the document.
+
+- The second test inside render is to test whether the component render a disabled submit button. We searched the button based on role that is 'button' and we became more specific by adding an object that mention the name of the button is "Submit". At last we want the assertion that the button is disabled. 
+
+- Now let's move to the behavior section. 
+
+- The first test will check whether text can be added in the input field. AddItemForm is passed to the render function together with setTodos. In the action part the input field is grabbed by placeholder text of "New Todo" and put it inside the input variable. Then user event is called and type property of user event is used. So in the input field it will type "hey there" and at the assertion we expect the input field should have value of 'hey there'.
+
+- The second test check whether the submit button becomes active once there is text in the input field. In the action part the input field is grabbed by placeholder text of "New Todo" and put it inside the input variable. Then user event is called and type property of user event is used. So in the input field it will type "hey there". Then button is searched using getByRole also button name Submit also passed as an object to find it more accurately. At last in the assertion we passed the button variable and expect it should be enabled. 
+
+- The third test check that whether input field become empty after submission. In the action part the input field is grabbed by placeholder text of "New Todo" and put it inside the input variable. Then user event is called and type property of user event is used. So in the input field it will type "hey there". Then button is searched using getByRole also button name Submit also passed as an object to find it more accurately. Then we perform another user event that perform click function at the button. Later we pass the input field to the assertion and expect it should have empty string. 
+
+- The last test check that whether setTodos function is called once the submit button is clicked. Again in the action part the input field is grabbed by placeholder text of "New Todo" and put it inside the input variable. Then user event is called and type property of user event is used. So in the input field it will type "hey there". Then button is searched using getByRole also button name Submit also passed as an object to find it more accurately. Then we perform another user event that perform click function at the button. At the assertion we passed the mockSetTodos and expect it to be called. 
+
+
+- 
 ### Unit test for Header component
 
 - Inside the Header folder create a new folder named with __tests__ and inside that folder create a new file with the name of Header.test.tsx and paste the following code inside that file.
 
 ```javascript
+import { render, screen } from '@testing-library/react'
+import Header from '../Header'
 
+describe('Header', () => {
+
+    it('should render the "Next Todos" heading', () => {
+        render(<Header title="Next Todos" />) // ARRANGE
+
+        //ACT
+        const header = screen.getByRole('heading', {
+            name: 'Next Todos'
+        })
+
+        expect(header).toBeInTheDocument()// ASSERT
+    })
+
+    it('should render "Dave" as a heading', async () => {
+        render(<Header title="Dave" />) // ARRANGE
+
+        //ACT
+        const header = screen.getByRole('heading', {
+            name: 'Dave'
+        })
+
+        expect(header).toBeInTheDocument()// ASSERT
+    })
+})
 ```
+- This suite perform two test. First one check whether the Header component render Next Todos heading and Second one check whether the Header component render Dave heading. 
 
 ### Unit test for TodoItem component
 
 - Inside the TodoItem folder create a new folder named with __tests__ and inside that folder create a new file with the name of TodoItem.test.tsx and paste the following code inside that file.
 
 ```javascript
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import TodoItem from '../TodoItem'
 
+const mockTodo = {
+    "userId": 1,
+    "title": "Wave hello! 👋",
+    "completed": false,
+    "id": 1
+}
+
+const mockSetTodos = jest.fn()
+
+describe('AddTodo', () => {
+
+    describe('Render', () => {
+
+        it('should render an article', () => {
+            render(<TodoItem todo={mockTodo} setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const article = screen.getByRole('article')
+
+            expect(article).toBeInTheDocument()// ASSERT
+        })
+
+        it('should render a label', () => {
+            render(<TodoItem todo={mockTodo} setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const label = screen.getByTestId('todo-item')
+
+            expect(label).toBeInTheDocument()// ASSERT
+        })
+
+        it('should render a checkbox', () => {
+            render(<TodoItem todo={mockTodo} setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const checkbox = screen.getByRole('checkbox')
+
+            expect(checkbox).toBeInTheDocument()// ASSERT
+        })
+
+        it('should render a button', () => {
+            render(<TodoItem todo={mockTodo} setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const button = screen.getByRole('button')
+
+            expect(button).toBeInTheDocument()// ASSERT
+        })
+
+    })
+
+    describe('Behavior', () => {
+
+
+        it('should call setTodos when checkbox clicked', async () => {
+            render(<TodoItem todo={mockTodo} setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const checkbox = screen.getByRole('checkbox')
+            await userEvent.click(checkbox)
+
+            expect(mockSetTodos).toBeCalled()// ASSERT
+        })
+
+        it('should call setTodos when button clicked', async () => {
+            render(<TodoItem todo={mockTodo} setTodos={mockSetTodos} />) // ARRANGE
+
+            //ACT
+            const button = screen.getByRole('button')
+            await userEvent.click(button)
+
+            expect(mockSetTodos).toBeCalled()// ASSERT
+        })
+
+    })
+})
 ```
+- It has two describe function inside the parent describe function. The first describe function run four test and check whether the component render an article, a label, a checkbox and a button. 
+
+- The second describe function check that after checkbox is clicked whether the setTodos function is called and also when the button is clicked whether the setTodos function is called. 
 
 ### Unit test for TodoList component
 
 - Inside the TodoList folder create a new folder named with __tests__ and inside that folder create a new file with the name of TodoList.test.tsx and paste the following code inside that file.
 
 ```javascript
+import { render, screen } from '@testing-library/react'
+import TodoList from '../TodoList'
 
+const mockTodos = [
+    {
+        "userId": 1,
+        "title": "Wave hello! 👋",
+        "completed": false,
+        "id": 1
+    },
+    {
+        "userId": 1,
+        "title": "Get Coffee ☕☕☕",
+        "completed": false,
+        "id": 2
+    },
+]
+
+const mockSetTodos = jest.fn()
+
+describe('TodoList', () => {
+
+    it('should render "No Todos Available" when the array is empty', () => {
+        render(<TodoList todos={[]} setTodos={mockSetTodos} />) // ARRANGE
+
+        //ACT
+        const message = screen.getByText('No Todos Available')
+
+        expect(message).toBeInTheDocument()// ASSERT
+    })
+
+    it('should render a list with the correct number of items', () => {
+        render(
+            <TodoList todos={mockTodos} setTodos={mockSetTodos} />
+        ) // ARRANGE
+
+        //ACT
+        const todosArray = screen.getAllByRole('article')
+
+        expect(todosArray.length).toBe(2)// ASSERT
+    })
+
+    it('should render the todos in the correct order', () => {
+        render(
+            <TodoList todos={mockTodos} setTodos={mockSetTodos} />
+        ) // ARRANGE
+
+        //ACT
+        const firstItem = screen.getAllByTestId("todo-item")[0]
+
+        expect(firstItem).toHaveTextContent("Get Coffee ☕☕☕")// ASSERT
+    })
+
+})
 ```
+- This test suite test three things. 
 
+- First it check if todos array is empty the component should render message that "No Todos Available". In the action part we searched the text "No Todos Available" using getByText function and stores it inside the message variable. Then at the assertion we passed the message and expect it should be present in the component.
 
+- Second we check whether the component render a list with correct number of items. Initially we render the TodoList components with todos and setTodos. In the action part we searched all the article in the components using getAllByRole and store it inside todosArray variable. At last in the assertion we checked whether the todosArray length is 2 or not. 
+
+- The third and last test check whether the todos are render in correct order. Initially we render the TodoList components with todos and setTodos. In the action part we searched using getAllByTestId and the testId value is "todo-item" and the first one is stored in firstItem variable. Then in the assertion we passed the firstItem variable inside the expect function and expect "Get Coffee ☕☕☕" as a result. 
 
 
 
