@@ -425,6 +425,9 @@ git clone https://github.com/gitdagray/next-testing-intro.git
 ```
 - Then go to the next-testing-intro folder and type npm i and press enter. 
 
+## Setting the basic file before test
+
+### Setting the types
 - Go to the src folder and create a new folder name types. Create a new file name Todo.ts. In this file we will keep out typescript types. Paste the following code in the file
 ```javascript
 export type Todo = {
@@ -435,6 +438,350 @@ export type Todo = {
 }
 ```
 - In our todo app we will have four thing. userId and id which will be number, title will be string and completed will boolean. 
+
+### Creating home page
+
+- Go to the app folder and inside the page.tsx paste following code. 
+
+```javascript
+"use client"
+
+import TodoList from "./components/TodoList/TodoList"
+import AddTodo from "./components/AddTodo/AddTodo"
+import { useState } from "react"
+import type { Todo } from "@/types/Todo"
+
+
+export default function Home() {
+  const [todos, setTodos] = useState<Todo[]>([
+    {
+      "userId": 1,
+      "title": "Wave hello! 👋",
+      "completed": false,
+      "id": 1
+    },
+    {
+      "userId": 1,
+      "title": "Get Coffee ☕☕☕",
+      "completed": false,
+      "id": 2
+    },
+    {
+      "userId": 1,
+      "title": "Go to Work ⚒",
+      "completed": false,
+      "id": 3
+    },
+    {
+      "userId": 1,
+      "title": "Write Code 💻",
+      "completed": false,
+      "id": 4,
+    }
+  ])
+
+  return (
+    <>
+      <AddTodo setTodos={setTodos} />
+      <TodoList todos={todos} setTodos={setTodos} />
+    </>
+  )
+}
+```
+- By writing use client at the top of the component we made the whole app as client component. So it becomes a react app rather than a next app. In real project you should not do it. The reason why we do it is that when you set the parent component to use client then you don't really need to do that for the child
+components because if the parent is a 
+client component then all of its children will be. As we are not dealing with real api so we will do like it. 
+
+- We imported TodoList and AddTodo component that will be used here. We also imported useState hook from react to store fake todo's. The Todo type also imported for typescript to working properly.
+
+- Inside the home function useState is called and Todo type used here and as a default value some fake todo object is stored inside the array. 
+
+- Then inside the return AddTodo component is called and setTodos is passed as props so that from that component new todos can be added.
+
+- Thereafter TodoList component is called and todos and setTodos passed as a props. 
+
+### Crating AddTodo component
+- Go to the app folder and create a new folder with the name of AddTodo and inside that folder create a file with the name AddTodo.tsx and paste the following code inside the file.
+```javascript
+import { useState, FormEvent } from "react"
+import type { Todo } from "@/types/Todo"
+
+type Props = {
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+}
+
+export default function AddItemForm({ setTodos }: Props) {
+    const [item, setItem] = useState("")
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        if (!item) return
+
+        setTodos(prev => {
+            const highestId = [...prev].sort((a, b) => b.id - a.id)[0].id
+
+            return [...prev, { userId: 1, title: item, completed: false, id: highestId + 1 }]
+        })
+
+        setItem("")
+
+    }
+
+    return (
+        <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+
+            <label hidden htmlFor="title">New Todo</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                value={item}
+                onChange={(e) => setItem(e.target.value)}
+                className="text-2xl p-1 rounded-lg flex-grow w-full"
+                placeholder="New Todo"
+                autoFocus
+            />
+
+            <button
+                type="submit"
+                className="p-2 text-xl rounded-2xl text-black border-solid border-black border-2 max-w-xs bg-green-500 hover:cursor-pointer hover:bg-green-400 disabled:bg-gray-300"
+                disabled={!item ? true : false}
+            >
+                Submit
+            </button>
+
+        </form>
+    )
+}
+```
+
+- We imported Todo type for typescript and useState and FormEvent from react.
+
+- A new type created with the name of Props for setTodos function that received from the home page. 
+
+- We declared AddItemForm and it received setTodos as props. 
+
+- A useState is declared with empty string for storing item. 
+
+- Next we created a handleSubmit asynchronous function. It check if there is nothing in the item state then it will return from there. 
+
+- Then if there is items in item state then setTodos function is called. 
+
+- Then we creates a copy of the previous todos array using the spread operator [...prev]. Then it sorts this copied array in descending order based on the id property of each todo object. After sorting, it retrieves the first todo object, which should have the highest id. It then extracts the id property of this todo and assigns it to highestId.
+
+- The return line returns a new array of todos. It spreads the previous todos [...prev], and then appends a new todo object to the end of the array. This new todo object has a userId of 1, a title taken from the item variable, a completed status of false, and an id that's one greater than the highestId found in the previous todos.
+
+- At last setItem is used to clear the item state. 
+
+- Inside the return at first there is a label which is hidden. It is created so that the typescript does not complain. 
+
+- Then the input tag, its type is text, id and name is title, its take item as value, setItem function set the value of input field on change. 
+
+- At last we have a submit button. If no item is in the item state then it will be enable and if there is any item in the item state then it will be disabled. 
+
+### Creating the header component
+
+- Inside the component folder create a new folder with the name of Header and inside that folder and create a file name with Header.tsx and paste the following code inside it. 
+
+```javascript
+export default function Header({ title }: { title: string }) {
+    return (
+        <h1 className="text-3xl font-bold mb-0 text-white/90">
+            {title}
+        </h1>
+    )
+}
+```
+- The header function received title as a props and show it inside a h1.
+
+### Creating TodoItem component
+
+- Inside the component folder create a new folder with the name of TodoItem and inside that folder and create a file name with TodoItem.tsx and paste the following code inside it. Also open the terminal and install react icon. Type npm i react-icons and press enter
+
+```javascript
+
+import { FaTrash } from "react-icons/fa"
+import { ChangeEvent, MouseEvent } from 'react'
+import { Todo } from "@/app/types/Todo"
+
+
+type Props = {
+    todo: Todo,
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+}
+
+export default function TodoItem({ todo, setTodos }: Props) {
+
+    const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        setTodos(prevTodos => [...prevTodos.filter(prev => prev.id !== todo.id), { ...todo, completed: !todo.completed }])
+    }
+
+    const handleDelete = async (e: MouseEvent<HTMLButtonElement>) => {
+        setTodos(prev => [...prev.filter(td => td.id !== todo.id)])
+    }
+
+    return (
+        <article className="my-4 flex justify-between items-center">
+            <label className="text-2xl hover:underline" data-testid="todo-item" htmlFor={todo.id.toString()}>
+                {todo.title}
+            </label>
+            <div className="flex items-center gap-4">
+                <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    id={todo.id.toString()}
+                    name="completed"
+                    onChange={handleChange}
+                    className="min-w-[2rem] min-h-[2rem]"
+                />
+
+                <button
+                    data-testid="delete-button"
+                    onClick={handleDelete}
+                    className="p-3 text-xl rounded-2xl text-black border-solid border-black border-2 max-w-xs bg-red-400 hover:cursor-pointer hover:bg-red-300">
+                    <FaTrash />
+                </button>
+            </div>
+        </article>
+    )
+}
+```
+- We imported trash icon from react icons. We also imported ChangeEvent and MouseEvent from react that will be used for typescript and at last we imported Todo for typescript.
+
+- We declared a new type with the name of Props.
+
+- We declared a TodoItem function that takes and todo and setTodos as props. 
+
+- A handleChange asynchronous function is declared that will be responsible for handling the completed status change of the todo. 
+
+- Inside the handleChange function setTodo function is called and  It filters the previous todos array (prevTodos) to remove the todo with the same id as the current todo being modified. Then, it appends a modified version of the current todo at the end of the array. The modification includes toggling the completed property of the todo.
+
+- Then comes the handleDelete function. It is an asynchronous arrow function. It takes an event e of type MouseEvent<HTMLButtonElement>, indicating that it responds to clicks on HTML button elements.
+
+- Inside the function body, it uses the setTodos function to update the state of todos. Similar to the previous code snippets, it follows the functional update pattern, where prev represents the previous state of todos. It constructs a new array of todos. It filters the previous todos array (prev) to exclude the todo item with the same id as the current todo being deleted. This effectively removes the todo item from the list.
+
+- Inside the return first thing is an article tag then a label tag that show the title of todo. The label tag has an attribute named "data-testid" it is important for our testing. We will use this attribute to find the tag when we will run the test. 
+
+- Then we have input tag that is checkbox type, the checked property is selected based on the completed status of todo, handleChange event handler is attached with it. 
+
+- At last we have a button that also has "data-testid" attribute that is necessary to find out the button in our test file. handleDelete function is attached with the button. 
+
+### Creating TodoList component
+
+- Inside the component folder create a new folder with the name of TodoList and inside that folder and create a file name with TodoList.tsx and paste the following code inside it. 
+
+```javascript
+import TodoItem from "../TodoItem/TodoItem"
+import type { Todo } from "@/types/Todo"
+
+type Props = {
+    todos: Todo[],
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+}
+
+export default function TodoList({ todos, setTodos }: Props) {
+
+    let content
+    if (todos.length === 0) {
+        content = <p>No Todos Available</p>
+    } else {
+        const sortedTodos = todos.sort((a, b) => b.id - a.id)
+
+        content = (
+            <>
+                {sortedTodos.map(todo => (
+                    <TodoItem key={todo.id} todo={todo} setTodos={setTodos} />
+                ))}
+            </>
+        )
+    }
+
+    return content
+}
+```
+- We imported Todo type for typescript and TodoItem component.
+
+- A new type is created the name of Props for typescript.
+
+- TodoList function takes todos and setTodos as props. 
+
+- We declared a content variable.
+
+- If and else condition is run it check it the todos length is 0 then content value is set to No Todos Available. Otherwise todos are sorted based on last id comes first and stored them in the sortedTodos variable. Then sortedTodos is mapped and for each todo the TodoItem component is called and todo adn setTodos is passed as props. And the whole thing is assigned to the content variable. 
+
+At last the component return the content variable. 
+
+### Creating Navbar component
+
+- Inside the component folder create a new file name with Navbar.tsx and paste the following code inside it. We didn't created any folder for it as we are not going to run any test on it. 
+
+```javascript
+import Header from "./Header/Header"
+
+export default function Navbar() {
+    return (
+        <nav className="bg-slate-600 p-4 sticky top-0 drop-shadow-xl z-10">
+            <div className="max-w-xl mx-auto sm:px-4 flex justify-between">
+                <Header title="Next Todos" />
+            </div>
+        </nav>
+    )
+}
+```
+- 
+
+## Setting the test 
+
+- The file structure for test is as follows. Inside the app folder i created a __tests__ folder for home page test script. 
+
+- For all components inside the component folder i created __tests__ folder inside each of the component folder for storing testing file of each component. 
+
+- Inside each component folder the test file run unit test. The test file for home page is used for integration test. 
+
+### Unit test for AddToDo component
+
+- Inside the AddTodo folder create a new folder named with __tests__ and inside that folder create a new file with the name of AddTodo.test.tsx and paste the following code inside that file.
+
+```javascript
+
+```
+### Unit test for Header component
+
+- Inside the Header folder create a new folder named with __tests__ and inside that folder create a new file with the name of Header.test.tsx and paste the following code inside that file.
+
+```javascript
+
+```
+
+### Unit test for TodoItem component
+
+- Inside the TodoItem folder create a new folder named with __tests__ and inside that folder create a new file with the name of TodoItem.test.tsx and paste the following code inside that file.
+
+```javascript
+
+```
+
+### Unit test for TodoList component
+
+- Inside the TodoList folder create a new folder named with __tests__ and inside that folder create a new file with the name of TodoList.test.tsx and paste the following code inside that file.
+
+```javascript
+
+```
+
+
+
+
+
+
+
+```javascript
+
+```
+```javascript
+
+```
 ```javascript
 
 ```
