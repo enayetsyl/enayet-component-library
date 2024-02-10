@@ -236,7 +236,7 @@ export default function Home() {
 In conclusion, leveraging UploadThing within your Next.js projects can significantly enhance the efficiency and reliability of file uploading functionalities. By following the comprehensive steps outlined in this guide, developers can seamlessly integrate UploadThing into their applications, empowering users to effortlessly upload various types of files with confidence and ease. Whether you're building a content management system, an e-commerce platform, or a multimedia sharing platform, UploadThing provides the essential tools and capabilities to streamline the file uploading process, ultimately contributing to a more seamless and enjoyable user experience. So why wait? Elevate your Next.js projects with UploadThing today and unlock the full potential of file uploading capabilities.
 
 
-Get the article in README file => https://github.com/enayetsyl/enayet-component-library/blob/main/src/FBMassenger/FBMassenger.md
+Get the article in README file => https://github.com/enayetsyl/enayet-component-library/blob/main/src/FileUpload/FileUpload.md
 
 My Linkedin => https://www.linkedin.com/in/md-enayetur-rahman/
 
