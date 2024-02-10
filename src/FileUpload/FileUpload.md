@@ -17,6 +17,14 @@ In this guide, we'll explore how to simplify the process of file uploading in Ne
 
 - At the left side of the dashboard go to the API Keys tab. Cop the secret and App id and paste it in the .env file of your vs code. 
 
+### Install 
+
+- Open the terminal in vs code. Paste following code and hit enter
+
+```javascript
+npm install uploadthing @uploadthing/react
+```
+
 ### Setting up backend
 
 - Inside the app folder create a folder with the name of api and inside that create another folder with the name of uploadthing and inside that folder create file with the name of core.js. Paste the following code inside that file
