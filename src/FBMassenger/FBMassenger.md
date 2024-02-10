@@ -87,3 +87,13 @@ export default function RootLayout({ children }) {
 ### Conclusion:
 
 Integrating a custom Facebook Messenger chat option into your Next.js website offers numerous benefits, from improving customer communication to increasing user engagement. By following the steps outlined in this guide, you can seamlessly embed this feature into your site, providing visitors with a convenient and direct channel to connect with your business. Embrace the power of personalized communication and elevate your online presence with this innovative addition to your Next.js project.
+
+Get the article in README file => https://github.com/enayetsyl/enayet-component-library/blob/main/src/FBMassenger/FBMassenger.md
+
+My Linkedin => https://www.linkedin.com/in/md-enayetur-rahman/
+
+My Facebook => https://www.facebook.com/profile.php?id=100094416483981
+
+My Twitter => https://twitter.com/enayetu_syl
+
+My Github => https://github.com/enayetsyl
