@@ -916,6 +916,43 @@ export default App;
 npm install react-icons --save
 ```
 
+- Now we will install react hot toast and for that open the terminal and check that you are in the frontend folder and paste following and hit enter
+
+```javascript
+npm install react-hot-toast
+```
+- Go to the App.jsx file and import toaster and put the toaster component at the bottom as follows
+
+```javascript
+import { Toaster } from 'react-hot-toast'
+function App() {
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+      <Toaster/>
+    </div>
+  );
+}
+
+export default App;
+```
+
+- Now we will use zustand for global state management. 
+
+- Go to the terminal and make sure you are in the frontend folder and paste the following code and hit enter
+
+```javascript
+npm install zustand
+```
+
+
+
+
+
 ### Setting the background image for whole app
 
 - Go to the app.css file and paste the following code
@@ -1479,37 +1516,967 @@ import { Link } from "react-router-dom";
 - Go to the signup page you will see following code
 
 ```javascript
-<a className="text-sm hover:underline hover:text-blue-600 mt-2 inline-block  text-white" href="#">
+<a
+  className="text-sm hover:underline hover:text-blue-600 mt-2 inline-block  text-white"
+  href="#"
+>
   Already have an account?
 </a>
 ```
+
 - - Change the a tag to Link tag from react-router-dom and change href to to='/login'. The code will be as follows
+
 ```javascript
 import { Link } from "react-router-dom";
 
 <Link
   to={"/login"}
   className="text-sm hover:underline hover:text-blue-600 mt-2 inline-block  text-white"
-  
 >
   Already have an account?
 </Link>;
 ```
 
-- Now check the browser whether you can toggle between login and signup page. 
+- Now check the browser whether you can toggle between login and signup page.
+
+### Getting form data from the signup page
+
+- Go the to the signup page and paste following before return.
+
+```javascript
+const [inputs, setInputs] = useState({
+  fullName: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+  gender: "",
+});
+
+const handleCheckboxChange = (gender) => {
+  setInputs({ ...inputs, gender });
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  console.log(inputs);
+};
+```
+
+- I set the inputs state for getting values of fullName, username, password, confirmPassword and gender.
+
+- handleCheckboxChange function will get the value of gender from the checkbox and put it inside the inputs.
+
+- handleSubmit function will take the form value for now and console log it. Later we will post data to the backend.
+
+- Import following.
+
+```javascript
+import GenderCheckbox from "./GenderCheckbox";
+import { useState } from "react";
+```
+
+- Inside the return statement change the following code.
+
+```javascript
+<form onSubmit={handleSubmit}>
+
+	<input type='text' placeholder='John Doe' className='w-full input input-bordered  h-10'
+	value={inputs.fullName}
+	onChange={(e) => setInputs({ ...inputs, fullName: e.target.value })}
+						/>
+<input type='text' placeholder='johndoe' className='w-full input input-bordered h-10'
+value={inputs.username}
+onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
+					/>
+<input
+type='password'
+placeholder='Enter Password'
+className='w-full input input-bordered h-10'
+value={inputs.password}
+onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
+						/>
+<input
+type='password'
+placeholder='Confirm Password'
+className='w-full input input-bordered h-10'
+value={inputs.confirmPassword}
+onChange={(e) => setInputs({ ...inputs, confirmPassword: e.target.value })}
+						/>
+<GenderCheckbox  onCheckboxChange={handleCheckboxChange} selectedGender={inputs.gender}/>
+
+```
+- I added handleSubmit function as an onSubmit handler.
+
+- In the input fields i attached the value and onChange handler. 
+
+- I passed the onCheckboxChange function and value of gender property to the GenderCheckbox component.
+
+- Now go to the GenderCheckbox component and paste the following code.
+
+```javascript
+
+const GenderCheckbox = ({ onCheckboxChange, selectedGender }) => {
+	return (
+		<div className='flex'>
+			<div className='form-control'>
+				<label className={`label gap-2 cursor-pointer ${selectedGender === "male" ? "selected" : ""} `}>
+					<span className=' text-white label-text'>Male</span>
+					<input type='checkbox' className='checkbox border-slate-900'
+					checked={selectedGender === "male"}
+					onChange={() => onCheckboxChange("male")}
+					/>
+				</label>
+			</div>
+			<div className='form-control'>
+				<label className={`label gap-2 cursor-pointer ${selectedGender === "female" ? "selected" : ""}`}>
+					<span className='label-text text-white'>Female</span>
+					<input type='checkbox' className='checkbox border-slate-900'
+					checked={selectedGender === "female"}
+					onChange={() => onCheckboxChange("female")}
+					/>
+				</label>
+			</div>
+		</div>
+	);
+};
+export default GenderCheckbox;
+```
+- I received the onCheckboxChange function and selectedGender as a props. 
+
+- In the label dynamic class is added to select the checkbox. 
+
+- Inside the input tag i added the checked functionality and onChange handler. 
+
+- Now you should go to the browser, fill up the signup form and check whether the form data is showing correctly in the console. 
+
+### Creating a global context
+
+- Go to the src folder. Inside it create a folder named context. Inside that create a file name AuthContext.jsx. It will be used for storing auth related state. Paste the following code inside it. 
+
+```javascript
+import { createContext, useContext, useState } from "react";
+
+export const AuthContext = createContext();
+
+export const useAuthContext = () => {
+	return useContext(AuthContext);
+};
+
+export const AuthContextProvider = ({ children }) => {
+	const [authUser, setAuthUser] = useState(JSON.parse(localStorage.getItem("chat-user")) || null);
+
+	return <AuthContext.Provider value={{ authUser, setAuthUser }}>{children}</AuthContext.Provider>;
+};
+```
+- I imported createContext, useContext and useState from react. 
+
+- I created a context with the name of AuthContext and exported it.
+
+- I created useAuthContext hook so that in the user component it can be called easily.
+
+- I created and exported AuthContextProvider that takes a children as a prop and return it. 
+
+- I created a authUser context and its initial value is parsed data from local storage with the name of chat-user. It will be needed later in other components. 
+
+- Then passed the state as a value. 
+
+- Now go to the main.jsx file and wrap the whole application by AuthContextProvider. Your code will look like as follows
+
+```javascript
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+import { BrowserRouter } from "react-router-dom"
+import AuthContextProvider from './context/AuthContext.jsx'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter>
+   <AuthContextProvider>
+   <App />
+   </AuthContextProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+)
+```
+
+### Using hook to post registration data to backend.
+
+- Go to the src folder and create a folder with the name of hooks. Inside it create a file name useSignup.js and paste the following code inside it.
+
+```javascript
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useAuthContext } from "../context/AuthContext";
+
+const useSignup = () => {
+	const [loading, setLoading] = useState(false);
+	const { setAuthUser } = useAuthContext();
+
+	const signup = async ({ fullName, username, password, confirmPassword, gender }) => {
+		const success = handleInputErrors({ fullName, username, password, confirmPassword, gender });
+		if (!success) return;
+
+		setLoading(true);
+		try {
+			const res = await fetch("/api/auth/signup", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ fullName, username, password, confirmPassword, gender }),
+			});
+
+			const data = await res.json();
+			if (data.error) {
+				throw new Error(data.error);
+			}
+			localStorage.setItem("chat-user", JSON.stringify(data));
+			setAuthUser(data);
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return { loading, signup };
+};
+export default useSignup;
+
+function handleInputErrors({ fullName, username, password, confirmPassword, gender }) {
+	if (!fullName || !username || !password || !confirmPassword || !gender) {
+		toast.error("Please fill in all fields");
+		return false;
+	}
+
+	if (password !== confirmPassword) {
+		toast.error("Passwords do not match");
+		return false;
+	}
+
+	if (password.length < 6) {
+		toast.error("Password must be at least 6 characters");
+		return false;
+	}
+
+	return true;
+}
+```
+- At the top of component there are some imports.
+
+- I declared a loading state and called setAuthUser from the authContext.
+
+- Then i declared a asynchronous signup function that takes fullName, username, password, confirmPassword, gender as a props which comes from input state of signup page. 
+
+- Then i called the handleInputErrors function and passed the props to it to check whether everything is ok. We will discuss about it later. 
+
+- If error found then the function returns from here. 
+
+- If everything ok then loading state set to true and a post request send to the backend. In the url full url is not mentioned. for that you need to configuare vite.config.js file. Go to that file and paste following code inside it
+
+```javascript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+	plugins: [react()],
+	server: {
+		port: 3000,
+		proxy: {
+			"/api": {
+				target: "http://localhost:5000",
+			},
+		},
+	},
+});
+```
+- Here we added the proxy property.
+
+- Then i convert and store json data in the data variable.
+
+- If data has error then it is thrown and catch block will show the error.
+
+- If data received successfully from backend then it is stored both in the localStorage and authUser state.
+
+- The catch block show any error message captured during the process and show as a hot toast. 
+
+- Finally the loading state is set to false.  
+
+- At last the loading state and signup function is returned. 
+
+- Now move to the handleInputErrors function.
+
+- At first it check that whether all the fields are filled up properly. If not it show error as a hot toast.
+
+- Then it checked whether the password and confirm password matched.
+
+- Then it checked whether password is minimum 6 character long. 
+
+- If any one is wrong it return false. Otherwise return true. 
+
+### Fixing cors error for development
+
+- Go to the vite.config.js file and paste the following code
+
+```javascript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server:{
+    port: 3000,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000"
+      }
+    }
+  }
+})
+
+```
+- Here i added the proxy property. It will only be needed for development. We will deploy both server and client together. 
+ 
+### Conditional rendering of  login, signup and home page
+
+- Now i want if user is logged in he should not get access of login and signup page and redirect to home page and vice versa. 
+
+- For doing it go to the App.jsx file and pase the following code in it. 
+
+```javascript
+import { Navigate, Route, Routes } from "react-router-dom";
+import "./App.css";
+import Home from "./pages/home/Home";
+import Login from "./pages/login/Login";
+import { Toaster } from 'react-hot-toast'
+import { useAuthContext } from "./context/AuthContext";
+import SignUp from "./pages/signup/SignUp";
+
+function App() {
+  const {authUser} = useAuthContext()
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      <Routes>
+        <Route path="/" element={authUser ? <Home /> : <Navigate to={'/login'}/>} />
+        <Route path="/login" element={authUser ? <Navigate to={'/'}/> : <Login />} />
+        <Route path="/signup" element={authUser ? <Navigate to={'/'}/> : <SignUp />} />
+      </Routes>
+      <Toaster/>
+    </div>
+  );
+}
+
+export default App;
+
+```
+- I called authUser state from auth context.
+
+- Inside the route component i applied conditional rendering.
+
+- In the home route if auth user is available then he can access the home route otherwise will be navigate to login page. 
+
+- In the login route if auth user is not available then he can access the login route otherwise will be navigate to home page. 
+- In the signup route if auth user is not available then he can access the signup route otherwise will be navigate to home page. 
+
+
+### Setting loading state in the button of the signup page
+
+- Go to the signup page and at the bottom of the page you will file following jsx code 
+
+```javascript
+<button className='btn btn-block btn-sm mt-2 border border-slate-700 text-black'>Sign Up</button>
+```
+
+- Replace the above code with the following code.
+
+```javascript
+<button className='btn btn-block btn-sm mt-2 border border-slate-700' disabled={loading}>
+{loading ? <span className='loading loading-spinner'></span> : "Sign Up"}
+</button>
+```
+
+- If the loading state is true the button will be disabled and show a spinner.
+
+- If the loading state is false the button will show Sign Up text. 
+
+### Activating logout button
+
+- Go to the hooks folder and create a file with the name of useLogout.js and paste the following code
+
+```javascript
+import { useState } from "react"
+import toast from "react-hot-toast"
+import { useAuthContext } from "../context/AuthContext"
+
+const useLogout = () => {
+
+const [loading, setLoading] = useState(false)
+const {setAuthUser} = useAuthContext()
+const logout = async () => {
+  setLoading(true)
+  try {
+    const res = await fetch("/api/auth/logout",{
+      method: 'POST',
+      headers: {
+        "Content-type": "application/json"
+      }
+    })
+    const data = await res.json()
+
+    if(data.error){
+      throw new Error(data.error)
+    }
+
+    localStorage.removeItem("chat-user")
+    setAuthUser(null)
+
+  } catch (error) {
+    toast.error(error.message)
+  } finally{
+    setLoading(false)
+  }
+}
+
+return {logout, loading}
+
+}
+
+export default useLogout
+```
+
+- I set loading state and imported setAuthUser from authContext. 
+
+- I created an asynchronous logout function.
+
+- Initially loading state set to true.
+
+- Using fetch the logout route hit.
+
+- From the localStorage the chat user is removed and authUser is set to null.
+
+- Error block shows error message using toast.
+
+- Finally loading state is set to false.
+
+- At last the loading state and logout function is returned. 
+
+- Now go to the LogoutButton component and import loading state and logout function using useLogout hook. 
+
+- Inside the logout button set the logout function as a handler of onClick.
+
+- At last i used loading state to show logout button if loading is false and spinner if it is true. 
+
+### Setting login functionality
+
+- Go to the login.jsx page and paste the following code in the file
+
+```javascript
+import { useState } from "react";
+import useLogin from "../../hooks/useLogin";
+
+const [username, setUserName] = useState('')
+  const [password, setPassword] = useState('')
+
+  const {loading, login} = useLogin()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    await login(username, password)
+    
+  }
+
+<form onSubmit={handleSubmit}>
+
+ <input
+type="text"
+placeholder="Enter username"
+className="w-full input input-bordered h-10"
+value={username}
+onChange={(e) => setUserName(e.target.value)}
+            />
+
+ <input
+type="password"
+placeholder="Enter Password"
+className="w-full input input-bordered h-10"
+value={password}
+onChange={(e) => setPassword(e.target.value)}
+            />            
+
+<button
+className="btn btn-block btn-sm mt-2 text-black"
+ disabled={loading}>
+{loading ? 
+(<span className="loading loading-spinner "></span>) : 
+("Login")}
+</button>
+```
+- The full code will look like as follows
+
+```javascript
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import useLogin from "../../hooks/useLogin";
+
+const Login = () => {
+  const [username, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { loading, login } = useLogin();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await login(username, password);
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-w-96 mx-auto">
+      <div className="w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0">
+        <h1 className="text-3xl font-semibold text-center text-gray-300">
+          Login
+          <span className="text-blue-500"> FandFChat</span>
+        </h1>
+
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label className="label p-2">
+              <span className="text-base label-text text-white">Username</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Enter username"
+              className="w-full input input-bordered h-10"
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="text-base label-text text-white">Password</span>
+            </label>
+            <input
+              type="password"
+              placeholder="Enter Password"
+              className="w-full input input-bordered h-10"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <Link
+            to="/signup"
+            className="text-sm  hover:underline hover:text-blue-600 mt-2 inline-block text-white"
+          >
+            {"Don't"} have an account?
+          </Link>
+
+          <div>
+            <button
+              className="btn btn-block btn-sm mt-2 text-black"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="loading loading-spinner "></span>
+              ) : (
+                "Login"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+export default Login;
+
+```
+- I create username and password state to store data provided by the user.
+
+- From the use login hook i imported loading state and login function. Later we will see the code of useLogin hook.
+
+- The handleSubmit function is used as onSubmit handler and call the login function and pass username and password to it.
+
+- Inside the username and password input field  i added value tag and onChange handler.
+
+- At last i used loading state in login button. 
+
+- If the loading state is true the button will be disabled and show a spinner.
+
+- If the loading state is false the button will show Login text. 
+
+### useLogin hook
+
+- Go to the hooks folder and create file name useLogin.js and paste the following code inside it. 
+
+```javascript
+import {useState} from 'react'
+import toast from "react-hot-toast"
+import { useAuthContext } from '../context/AuthContext'
+
+const useLogin = () => {
+  const [loading, setLoading] = useState(false)
+
+  const {setAuthUser} = useAuthContext()
+  const login = async (username, password) => {
+    const success = handleErrorInput(username, password)
+
+    if(!success){
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({username, password})
+      })
+
+      const data = await res.json()
+
+      if(data.error){
+        throw new Error(data.error)
+      }
+
+      localStorage.setItem("chat-user", JSON.stringify(data))
+      setAuthUser(data)
+
+    } catch (error) {
+      toast.error(error.message)
+    } finally{
+      setLoading(false)
+    }
+    
+  }
+  
+  return {loading, login}
+}
+
+export default useLogin
+
+const handleErrorInput = (username, password) => {
+  if(!username, !password){
+    toast.error("Please fill in all the fields")
+    return false
+  }
+
+  if (password.length < 6 ){
+    toast.error("Password must be 6 character long.")
+    return false
+  }
+
+  return true
+}
+```
+- I declared loading state and initial value is set to false.
+
+- From the authContext i called the setAuthUser function.
+
+- I declared a asynchronous login function and passed username and password to it. 
+
+- Then i passed the username and password to the handleErrorInput function. It will be discussed later.
+
+- If the success variable is false then i return from here. 
+
+- Then i set the loading state to true.
+
+- Inside the try block i called the login route and post the username and password.
+
+- Data received from backend has error then i throw the error otherwise set the data to the localStorage and in authUser state.
+
+- Catch block show error message in toast.
+
+- Finally block set loading state to false
+
+- At last i return the loading state and login function.
+
+- In the handleErrorInput i checked whether the username and password any input filed is blank then i show error toast and return false.
+
+- Also if password is less then 6 characters then i also show error toast and return false.
+
+- If everything is ok then i return true. 
+
+- Now go to the ui and check whether you can login. 
+
+### Creating global state using zustand
+
+- I already created a global context for authUser and i can use it for several purpose but i want to use a library zustand managing other states, so that i can demonstrate my understanding in it also.
+
+- Go to the src folder and create a folder with the name of zustand. You can name it store as well. Inside the folder create a file with the name of useConversation.js and paste the following code
+
+```javascript
+import { create } from 'zustand'
+
+const useConversation = create((set) => ({
+  selectedConversation: null,
+  setSelectedConversation: (selectedConversation) => set({selectedConversation}),
+  messages: [],
+  setMessages: (messages) => set({messages})
+}))
+
+export default useConversation;
+```
+
+- I imported create function from zustand
+
+- I declared useConversation variable and then called the create function.
+
+- create function takes set as an argument in its callback and it will return an object and that will be out global state.
+
+- First we had selectedConversation and it has a default value is null. 
+
+- For selectedConversation state we have a setter function. Its name is setSelectedConversation. It takes selectedConversation as an argument and call the set function to update the selectedConversation state.
+
+- Next we declared messages state with default value of empty array.
+
+- Then the setter function setMessage takes messages as and argument and call the set function to update the messages states. 
+
+### Getting user information for the sidebar
+
+- For fetching user conversation data we will use a hook. Go to the hooks folder and create a file with the name of useGetConversations.js and paste the following code inside it
+
+```javascript
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+
+const useGetConversations = () => {
+  const [loading, setLoading] = useState(false)
+
+  const [conversations, setConversations] = useState([])
+ 
+  useEffect(() => {
+    const getConversations = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch("/api/users")
+        const data = await res.json()
+
+        if(data.error){
+          throw new Error(data.error)
+        }
+
+        setConversations(data)
+      } catch (error) {
+        toast.error(error.message)
+      } finally{
+        setLoading(false)
+      }
+    }
+
+    getConversations()
+  },[])
+ 
+  return {loading, conversations}
+}
+
+export default useGetConversations;
+```
+- I created loading and conversation state. 
+
+- Inside the useEffect hook i created getConversations asynchronous function.
+
+- I set the loading state to true.
+
+- Inside the try block i call the users route.
+
+- If any error received then if block throw it.
+
+- If data received correctly i store it inside the conversations block.
+
+- Catch block show error message using toast. 
+
+- Finally block set loading state to false.
+
+- Then i called the getConversations function.
+
+- Now go to the conversations.jsx file and paste the following to get data in the component.
+
+```javascript
+import useGetConversations from "../../hooks/useGetConversations";
+
+const {loading, conversations} = useGetConversations()
+	console.log(conversations)
+```
+
+- Check the browser console to ensure that data is indeed received. 
+
+### Generating emojis for sidebar
+
+- We will create a file that will store emojis and export a function what will generate random emojis from that file. We will show emoji beside the name of each user in the side bar later. 
+
+- Go to the src folder create a folder with the name of utils and inside it create a file with the name of emojis.js and paste the following code inside it
+
+```javascript
+export const funEmojis = [
+	"👾",
+	"⭐",
+	"🌟",
+	"🎉",
+	"🎊",
+	"🎈",
+	"🎁",
+	"🎂",
+	"🎄",
+	"🎃",
+	"🎗",
+	"🎟",
+	"🎫",
+	"🎖",
+	"🏆",
+	"🏅",
+	"🥇",
+	"🥈",
+	"🥉",
+	"⚽",
+	"🏀",
+	"🏈",
+	"⚾",
+	"🎾",
+	"🏐",
+	"🏉",
+	"🎱",
+	"🏓",
+	"🏸",
+	"🥅",
+	"🏒",
+	"🏑",
+	"🏏",
+	"⛳",
+	"🏹",
+	"🎣",
+	"🥊",
+	"🥋",
+	"🎽",
+	"⛸",
+	"🥌",
+	"🛷",
+	"🎿",
+	"⛷",
+	"🏂",
+	"🏋️",
+	"🤼",
+	"🤸",
+	"🤺",
+	"⛹️",
+	"🤾",
+	"🏌️",
+	"🏇",
+	"🧘",
+];
+
+export const getRandomEmoji = () => {
+	return funEmojis[Math.floor(Math.random() * funEmojis.length)];
+};
+```
+- funEmojis store emojis and export it. You can generate it using chat-gpt.
+
+- getRandomEmoji function return a random emoji from the funEmojis array.
+
+- We will call the getRandomEmoji function in the conversations component. 
+
+### Passing data to the conversation component from the conversations components
+
+- Go to the conversations component and paste the following code inside it
+
+
+```javascript
+import useGetConversations from "../../hooks/useGetConversations";
+import { getRandomEmoji } from "../../utils/emojis";
+import Conversation from "./Conversation";
+
+const Conversations = () => {
+	const { loading, conversations } = useGetConversations();
+	return (
+		<div className='py-2 flex flex-col overflow-auto'>
+			{conversations.map((conversation, idx) => (
+				<Conversation
+					key={conversation._id}
+					conversation={conversation}
+					emoji={getRandomEmoji()}
+					lastIdx={idx === conversations.length - 1}
+				/>
+			))}
+
+			{loading ? <span className='loading loading-spinner mx-auto'></span> : null}
+		</div>
+	);
+};
+export default Conversations;
+```
+- Inside the div i mapped the conversations array and for each conversation i render the Conversation component and passed conversation to it.
+- I also called getRandomEmoji function and passed as a emoji props and at last i passed last index. 
+
+- Last index will be used to design the horizontal bar below each user name. Last index will help to identify the last user and for him the horizontal bar below it will not be displayed. 
+
+- If the loading state is true then a spinner will show otherwise the Conversation components will render. 
+
+### Setting dynamic value in the Conversation component
+
+- Go to the Conversation.jsx file and paste the following code.
+
+```javascript
+import useConversation from "../../zustand/useConversation";
+
+const Conversation = ({ conversation, emoji, lastIdx }) => {
+  const {selectedConversation, setSelectedConversation} = useConversation()
+
+  const isSelected = selectedConversation?._id === conversation._id
+
+
+  return (
+    <>
+      <div className={`flex gap-2 items-center hover:bg-sky-500 rounded p-2 py-1 cursor-pointer
+				${isSelected ? "bg-sky-500" : ""}
+			`}
+				onClick={() => setSelectedConversation(conversation)}
+      >
+        <div className="avatar online">
+          <div className="w-12 rounded-full">
+            <img
+              src={conversation.profilePic}
+              alt="user avatar"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col flex-1">
+          <div className="flex gap-3 justify-between">
+            <p className="font-bold text-gray-200">{conversation?.username}</p>
+            <span className="text-xl">{emoji}</span>
+          </div>
+        </div>
+      </div>
+
+      {
+        !lastIdx ? (<div className="divider my-0 py-0 h-1" />) : ""
+      }
+    </>
+  );
+};
+export default Conversation;
+
+```
+- I received conversation, emoji, lastIdx from props. 
+
+- I called the selectedConversation, setSelectedConversation from the useConversation hook that we created using zustand. 
+
+- isSelected variable is true if the id inside selectedConversation and conversation match. It will be used in the div to change its background color.
+
+- onClick handler is attached to the parent div to set the conversation in hte selectedConversation state. 
+
+- profilePic inside conversation state is set as a source of image tag.
+
+- Username and emoji is set in the respective fields.
+
+- At last horizontal scroll bar i removed for the last item. 
 
 ```javascript
 
 ```
-
-```javascript
-
-```
-
-```javascript
-
-```
-
 ```javascript
 
 ```
