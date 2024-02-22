@@ -627,16 +627,16 @@ const Conversation = mongoose.model("Conversation", conversationSchema);
 export default Conversation;
 ```
 
-### Creating message and conversation route
+### Creating message and users route
 
 - Go to the server.js file and create two new route for message and conversation. The code will be as follows
 
 ```javascript
 import messageRoutes from "./routes/message.routes.js";
-import conversationRoutes from "./routes/conversation.routes.js";
+import userRoutes from "./routes/user.routes.js"
 
-app.use("/api/message", messageRoutes);
-app.use("/api/conversation", conversationRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoutes)
 ```
 
 - Make sure you import the route path properly.
@@ -772,7 +772,7 @@ const sendMessage = async (req, res) => {
 
 - I destructure the message from req.body and receiverId from req.params
 
-- I also extracted sender id from req.user.\_id. In the protectRoute middleware function the user info stored inside req.
+- I also extracted sender id from req.user._id. In the protectRoute middleware function the user info stored inside req.
 
 - Based on the sender and receiver id i searched the database to find out whether there is any existing conversation between them.
 
@@ -949,9 +949,13 @@ export default App;
 npm install zustand
 ```
 
+- Now i will install socket for client side for chat. 
 
+- Go to the terminal and make sure you are in the frontend folder and paste the following code and hit enter
 
-
+```javascript
+npm i socket.io-client
+```
 
 ### Setting the background image for whole app
 
@@ -2474,9 +2478,925 @@ export default Conversation;
 
 - At last horizontal scroll bar i removed for the last item. 
 
+### Message Container ui setup
+
+- Go to the MessageContainer.jsx file and paste the following code
+
 ```javascript
+import { useEffect } from "react";
+import { useAuthContext } from "../../context/AuthContext";
+import useConversation from "../../zustand/useConversation";
+import MessageInput from "./MessageInput";
+import Messages from "./Messages";
+import { TiMessages } from "react-icons/ti";
+
+const MessageContainer = () => {
+	const  {selectedConversation, setSelectedConversation} = useConversation()
+
+	useEffect(() => {
+		// cleanup function (unmounts)
+		return () => setSelectedConversation(null);
+	}, [setSelectedConversation]);
+
+	return (
+		<div className='md:min-w-[450px] flex flex-col'>
+		{!selectedConversation ? (
+				<NoChatSelected />
+			) : (
+				<>
+					{/* Header */}
+					<div className='bg-slate-500 px-4 py-2 mb-2'>
+						<span className='label-text'>To:</span>{" "}
+						<span className='text-gray-900 font-bold'>{selectedConversation.fullName}</span>
+					</div>
+					<Messages />
+					<MessageInput />
+				</>
+			)}
+		</div>
+	);
+};
+export default MessageContainer;
+
+const NoChatSelected = () => {
+	const { authUser } = useAuthContext();
+	return (
+		<div className='flex items-center justify-center w-full h-full'>
+			<div className='px-4 text-center sm:text-lg md:text-xl text-gray-200 font-semibold flex flex-col items-center gap-2'>
+				<p>Welcome 👋 {authUser.fullName} ❄</p>
+				<p>Select a chat to start messaging</p>
+				<TiMessages className='text-3xl md:text-6xl text-center' />
+			</div>
+		</div>
+	);
+};
+```
+- From zustand useConversation function  i imported selectedConversation and setSelectedConversation. 
+
+- I called an useEffect hook to unmount the selectedConversation state. 
+
+- If selectedConversation state has a value then header will show otherwise NoChatSelected component will render.
+
+- NoChatSelected will show the user name dynamically and show a message in the ui. 
+
+
+### Sending message functionality
+
+- For sending message i used useSendMessage hook. 
+
+- Go to the hooks folder and create a new file with the name of useSendMessage.js file and paste the following code
+
+```javascript
+import { useState } from "react"
+import useConversation from "../zustand/useConversation"
+import toast from "react-hot-toast"
+
+const useSendMessage = () => {
+ const [loading, setLoading] = useState(false)
+
+ const  {messages, setMessages, selectedConversation} = useConversation()
+
+ const sendMessage = async(message) => {
+  setLoading(true)
+  try {
+    const res = await fetch(`/api/messages/send/${selectedConversation._id}`, {
+      method:"POST",
+      headers:{
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({message})
+    })
+    const data = await res.json()
+    if(data.error){
+      throw new Error(data.error)
+    }
+
+    setMessages([...messages, data])
+
+  } catch (error) {
+    toast.error(error.message)
+  } finally{
+    setLoading(false)
+  }
+ }
+
+  return {sendMessage, loading}
+
+}
+
+export default useSendMessage
+```
+- I declared loading state. 
+
+- I imported messages, setMessages and  selectedConversation from useConversation.
+
+- I declared a sendMessage asynchronous function that takes message as props.
+
+- Initially i set the loading state to true.
+
+- Inside the fetch i hit the send route and pass the receiver id as params and post message to the route.
+
+- If any error received i throw it.
+
+- Using setMessage function i set the new message int he messages together with earlier messages. 
+
+- I returned sendMessage function and loading state at last. 
+
+- Then go to the MessageInput.jsx component and paste the following code inside it
+
+```javascript
+import { useState } from "react";
+import { BsSend } from "react-icons/bs";
+import useSendMessage from "../../hooks/useSendMessage";
+
+const MessageInput = () => {
+	const [message, setMessage] = useState("")
+	const {loading, sendMessage} = useSendMessage()
+
+	const handleSubmit = async(e) => {
+		e.preventDefault()
+		if(!message) return;
+		await sendMessage(message)
+		setMessage('')
+	}
+
+
+	return (
+		<form className='relative px-4 my-3'
+		onSubmit={handleSubmit}
+		>
+			<div className='w-full'>
+				<input
+					type='text'
+					className='border text-sm rounded-lg block w-full p-2.5  bg-gray-700 border-gray-600 text-white pe-10'
+					placeholder='Send a message'
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+				/>
+				<button type='submit' className='absolute inset-y-0 end-5  flex items-center text-white  pe-3'>
+					{loading ? <div className="loading loading-spinner"></div> : <BsSend />}
+				</button>
+			</div>
+		</form>
+	);
+};
+export default MessageInput;
+```
+- I declared message state and import loading state and sendMessage function from useSendMessage hook. 
+
+- The handleSubmit asynchronous function takes event from the form and if message state is empty then return from here. 
+
+- If message state store any value then it call the sendMessage function and pass message as a parameter. 
+
+- At last the message state set to empty.
+
+- handleSubmit function is set as an onSubmit handler in the form tag.
+
+- In the input field message is set as a value and onChange handler is used to set the message in the message state. 
+
+- At last if loading state is true then spinner will show otherwise send button will show. 
+
+- Now check the whether the function is working properly. 
+
+### Designing message skeleton
+
+- Go to the component folder and create a folder with the name of skeletons and inside it create a file with the name of MessageSkeleton.jsx and paste following code inside it.
+
+```javascript
+const MessageSkeleton = () => {
+	return (
+		<>
+			<div className='flex gap-3 items-center'>
+				<div className='skeleton w-10 h-10 rounded-full shrink-0'></div>
+				<div className='flex flex-col gap-1'>
+					<div className='skeleton h-4 w-40'></div>
+					<div className='skeleton h-4 w-40'></div>
+				</div>
+			</div>
+			<div className='flex gap-3 items-center justify-end'>
+				<div className='flex flex-col gap-1'>
+					<div className='skeleton h-4 w-40'></div>
+				</div>
+				<div className='skeleton w-10 h-10 rounded-full shrink-0'></div>
+			</div>
+		</>
+	);
+};
+export default MessageSkeleton;
+```
+- The above code is copied from daisy ui. So you can check there website also if you wish.
+
+### Getting messages using getMessage hook
+
+- In order to display messages in the ui i have to fetch them from the database. I used hooks for that.
+
+- Go to the hooks folder and create file with the name of useGetMessages.js and paste the following code inside it.
+
+```javascript
+  import { useEffect, useState } from "react"
+import useConversation from "../zustand/useConversation"
+import toast from "react-hot-toast"
+
+const useGetMessages = () => {
+  const [loading, setLoading] = useState(false)
+
+  const { messages, setMessages, selectedConversation } = useConversation()
+
+  useEffect(() => {
+    const getMessages = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`/api/messages/${selectedConversation._id}`)
+        const data = await res.json()
+        if(data.error){
+          throw new Error(data.error)
+        }
+        setMessages(data)
+
+      } catch (error) {
+        toast.error(error.message)
+      }finally{
+        setLoading(false)
+      }
+    }
+  if(selectedConversation?._id) getMessages()
+  },[selectedConversation?._id, setMessages])
+
+return { messages, loading }
+
+}
+
+export default useGetMessages
+```
+- I declared loading state.
+
+- I imported  messages, setMessages and  selectedConversation from useConversation hook.
+
+- Inside useEffect hook i declared getMessages asynchronous function.
+
+- Initially i set the loading state to true.
+
+- Inside the fetch i hit messages route and send the id of the  person with whom user will make conversation. 
+
+- Data received from the server is set to the messages state.
+
+- If our user select any user for conversation that time getMessages function will be called.
+
+- Each time user will change the person with whom the he want to chat the useEffect will run and fetch data from the server.
+
+- At last the messages and loading state is returned from the component.
+
+
+### Getting data inside Messages component and passing data to Message component.
+
+- Go to the Message.jsx file and paste the following code inside it.
+
+```javascript
+import useGetMessages from "../../hooks/useGetMessages";
+import MessageSkeleton from "../skeletons/MessageSkeleton";
+import Message from "./Message";
+
+const Messages = () => {
+  const { messages, loading } = useGetMessages();
+
+  return (
+    <div className="px-4 flex-1 overflow-auto">
+      {!loading &&
+        messages.length > 0 &&
+        messages.map((message) => (
+          <div key={message._id}>
+            <Message message={message} />
+          </div>
+        ))}
+
+      {loading && [...Array(3)].map((_, idx) => <MessageSkeleton key={idx} />)}
+      {!loading && messages.length === 0 && (
+        <p className="text-center">Send a message to start the conversation</p>
+      )}
+    </div>
+  );
+};
+export default Messages;
 
 ```
+- I imported messages and loading state from useGetMessages hook.
+
+- If loading state is false and there are messages in the messages array that time the array will be mapped and for each message the Massage will render with the message will be passed as props. 
+
+- If loading state is true then MessageSkeleton will run three time.
+
+- If loading state is false and there is no message in the messages array that time a p tag will render that will "Send a message to start the conversation" text in the ui. 
+
+### Creating time conversion function
+
+- I have to show the time below each message in the ui. The database store full date time string. I have to convert it to a simple one. For that reason i created following component.
+
+- Go to the utils folder and create a file with the name of extractTime.js and paste following code.
+
+```javascript
+export function extractTime(dateString) {
+	const date = new Date(dateString);
+	const hours = padZero(date.getHours());
+	const minutes = padZero(date.getMinutes());
+	return `${hours}:${minutes}`;
+}
+
+// Helper function to pad single-digit numbers with a leading zero
+function padZero(number) {
+	return number.toString().padStart(2, "0");
+}
+```
+
+- The extractTime function takes dateString as a props. It will be passed from the component where the function  will be called.
+
+- The function is created using chatgpt. The dateString props is the date value stored in the MongoDB and the function return hours and minutes from it.
+
+
+### Populating data in the message component
+
+- Go to the Message.jsx file and paste the following code 
+
+```javascript
+import { useAuthContext } from "../../context/AuthContext";
+import { extractTime } from "../../utils/extractTime";
+import useConversation from "../../zustand/useConversation";
+
+const Message = ({ message }) => {
+	const { authUser } = useAuthContext();
+	const { selectedConversation } = useConversation();
+	const fromMe = message.senderId === authUser._id;
+	const formattedTime = extractTime(message.createdAt);
+	const chatClassName = fromMe ? "chat-end" : "chat-start";
+	const profilePic = fromMe ? authUser.profilePic : selectedConversation?.profilePic;
+	const bubbleBgColor = fromMe ? "bg-blue-500" : "";
+
+	const shakeClass = message.shouldShake ? "shake" : "";
+
+	return (
+		<div className={`chat ${chatClassName}`}>
+			<div className='chat-image avatar'>
+				<div className='w-10 rounded-full'>
+					<img alt='Tailwind CSS chat bubble component' src={profilePic} />
+				</div>
+			</div>
+			<div className={`chat-bubble text-white ${bubbleBgColor} ${shakeClass} pb-2`}>{message.message}</div>
+			<div className='chat-footer opacity-50 text-xs flex gap-1 items-center'>{formattedTime}</div>
+		</div>
+	);
+};
+export default Message;
+```
+- The component takes message props that was passed by the Messages component.
+
+- The authUser state is imported from useAuthContext hook.
+
+- The selectedConversation state is imported from useConversation hook.
+
+- fromMe variable will be true when senderId in the message and authUser id match. It will be required  designing ui.
+
+- formattedTime variable holds value of extracted time from the createdAt value. 
+
+- If message is from the user then chatClassName store chat-end daisy ui class otherwise store chat-start class.
+
+- If message is from the user then profilePic store picture from authUser state  otherwise store picture from selectedConversation state.
+
+- If message is from the user then bubble background color is store as blue-500 in the bubbleBgColor variable  otherwise is set null.
+
+- If shouldShake property inside the message is true then shakeClass will store shake animation otherwise null. We will add the css later in the the global.css file. 
+
+- Inside return statement all the classes is applied in the jsx.
+
+### Setting automatic scroll down to the message component
+
+- If messages become long that time our scroll bar stay at top. In order to go to the latest message user have to scroll down manually. Now i will make sure that the scroll bar should automatically down along with new messages.
+
+- First go to the Messages.jsx file and paste following code
+
+```javascript
+const lastMessageRef = useRef();
+
+	useEffect(() => {
+		setTimeout(() => {
+			lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+		}, 100);
+	}, [messages]);
+
+  {!loading &&
+        messages.length > 0 &&
+        messages.map((message) => (
+          <div key={message._id}
+					ref={lastMessageRef}
+					>
+```
+
+- Above are the partial code.
+
+- I initiated a useRef hook and name it lastMessageRef.
+
+- Inside the useEffect hook i created a setTimeout function that will run after 100 milliseconds. 
+
+- Inside the setTimeout function i wrote code to make sure that the scrollbar move along with lastMessageRef.
+
+- The useEffect hook as a dependency of messages. So each time the messages array will change the useEffect will run. 
+
+- In the div where inside that Message component is rendering i link the lastMessageRef. So each time a new message will appear the lastMessageRef will change and the useEffect will run and the scrollbar will go down. 
+
+### Making search input field functional
+
+- Go to the SearchInput.jsx file and paste the following code
+
 ```javascript
 
+import { useState } from "react";
+import { IoSearchSharp } from "react-icons/io5";
+import useConversation from "../../zustand/useConversation";
+import useGetConversations from "../../hooks/useGetConversations";
+import toast from "react-hot-toast";
+
+const SearchInput = () => {
+	const [search, setSearch] = useState("");
+	const { setSelectedConversation } = useConversation();
+	const { conversations } = useGetConversations();
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		if (!search) return;
+		if (search.length < 3) {
+			return toast.error("Search term must be at least 3 characters long");
+		}
+
+		const conversation = conversations.find((c) => c.fullName.toLowerCase().includes(search.toLowerCase()));
+
+		if (conversation) {
+			setSelectedConversation(conversation);
+			setSearch("");
+		} else toast.error("No such user found!");
+	};
+
+
+	return (
+		<form className='flex items-center gap-2'
+	onSubmit={handleSubmit}
+		>
+			<input type='text' placeholder='Search…' className='input input-bordered rounded-full' 
+			value={search}
+			onChange={(e) => setSearch(e.target.value)}
+			/>
+			<button type='submit' className='btn btn-circle bg-sky-500 text-white'>
+				<IoSearchSharp className='w-6 h-6 outline-none' />
+			</button>
+		</form>
+	);
+};
+export default SearchInput;
 ```
+- I created a search state to store the string that user will search. 
+
+- setSelectedConversation is imported from the useConversation hook.
+
+- handleSubmit function takes event from the form. 
+
+- It check whether the search state is empty. If it is empty return from here.
+
+- Then it check whether the search word is less than 3 letters then it show an error toast and return from here.
+
+- Then a simple algorithm is used to find out the search item.
+
+- First the a search operation is done on the conversation array and for each conversation the fullName property is first converted to lower case then the search state value is converted to lower case and check that the fullName property includes the search value. If there is any match it is stored inside the conversation variable.
+
+- If search item matched then it is set to the selectedConversation and search field is cleared. Otherwise error toast is shown.
+
+- Inside the form tag the handleSubmit function is attached to the onSubmit handler.
+
+- search state value is set as value in the input field and onChange handler attached to the input field. 
+
+### Creating socket server at the backend
+
+- Go to the backend folder and create a new folder with the name of socket and inside it create a file name socket.js and paste the following code
+
+```javascript
+import { Server } from "socket.io"
+import http from 'http'
+import express from "express"
+
+const app = express()
+
+const server = http.createServer(app)
+
+const io = new Server(server, {
+  cors:{
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST"]
+  }
+})
+
+export const getReceiverSocketId = (receiverId) => {
+	return userSocketMap[receiverId];
+};
+
+const userSocketMap = {}; // {userId: socketId}
+
+
+io.on("connection", (socket) => {
+  console.log("New user connected", socket.id)
+
+  const userId = socket.handshake.query.userId;
+	if (userId != "undefined") userSocketMap[userId] = socket.id;
+
+	// io.emit() is used to send events to all the connected clients
+	io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected", socket.id)
+    delete userSocketMap[userId];
+		io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  })
+})
+
+
+export {app,io, server}
+```
+- I imported Server from socket.io, http from http and express from express.
+
+- I initialize the express and store it inside app.
+
+- I created a http server and pass express server to it and store it inside server variable.
+
+- In the io variable i create a new server and passed the earlier created server to it. As socket provide some error so i added cors inside and object and cors value is also an object. It has origin property and it takes an array of url. At present we have localhost 3000. The methods property has get and post inside an array.
+
+- The getReceiverSocketId is a function that takes receiverId and return the socket Id. It will be required when we will send message to the user. 
+
+- I created a variable with the name of userSocketMap that hold an object. Its property name is userId and value is socketId. It will be required to get specific user message in later. 
+
+- The io.on is used for listening for a connection. Inside it there is a callback function and it takes socket that store various properties and one of it is id. Inside the callback function i console log a message together with user socket id. 
+
+- From the frontend the userId will be send as a query parameter. So inside the userId variable the userId is destructured from the query params. 
+
+- Then if user id is not undefined then socket id will be pushed to the userSocketMap object together with the userId. So we can now link the userId with the socketId.
+
+- Then io.emit broadcast to every user that those who are online and send the keys of userSocketMap that contains userId.
+
+- For disconnecting again i used socket.on and a string "disconnect". Then a callback is used that console log a messaged an show the socket id of user who disconnected.
+
+- Then the person who has been disconnected his id has been deleted from the userSocketMap
+
+- Then io.emit broadcast to every user that those who are online and send the keys of userSocketMap that contains userId.
+
+- At last i exported the app, io and server so that they can be used in our file as well.
+
+- Now go to the server.js file and delete "const app = express()" from it as it is initiate and in the socket.js file. Add following line at the top of the file
+
+```javascript
+import { app, server } from "./socket/socket.js"
+```
+Instead of app.listen use server.listen.
+
+### Implementing socket.io in the sendMessage controller
+
+- Go to the message.controller.js file and inside the sendMessage function after await Promise.all paste following code
+
+```javascript
+await Promise.all([conversation.save(), newMessage.save()])
+
+    // SOCKET IO FUNCTIONALITY WILL GO HERE
+		const receiverSocketId = getReceiverSocketId(receiverId);
+		if (receiverSocketId) {
+			// io.to(<socket_id>).emit() used to send events to specific client
+			io.to(receiverSocketId).emit("newMessage", newMessage);
+		}
+    res.status(201).json(newMessage)
+```
+- I called the getReceiverSocketId and pass the receiverId it and it will return us receiverSocketId that i stored inside receiverSocketId variable.
+
+- Then i checked if there is a value inside receiverSocketId then the newMessage will be emitted to that particular receiver so no one else can see that message. 
+
+### Creating global context for socket and connecting socket at the front end
+
+- Go to the frontend folder and then go to the context folder inside src folder. Create a new file with the name of SocketContext.jsx and paste the following code inside it. 
+
+```javascript
+import { createContext, useContext, useEffect, useState } from "react";
+import { useAuthContext } from "./AuthContext";
+import io from "socket.io-client"
+
+const SocketContext = createContext()
+
+export const useSocketContext = () => {
+  return useContext(SocketContext)
+}
+
+export const SocketContextProvider = ({children}) => {
+  const [socket, setSocket] = useState(null)
+  const [onlineUsers, setOnlineUsers] = useState([])
+  const {authUser} = useAuthContext()
+
+  useEffect(() => {
+    if(authUser){
+      const socket = io("http://localhost:5000", {
+        query: {
+          userId: authUser._id
+        }
+      })
+
+      setSocket(socket)
+
+      socket.on("getOnlineUsers", (users) => {
+        setOnlineUsers(users)
+      })
+
+      return () => socket.close()
+
+    } else{
+      if(socket){
+        socket.close()
+        setSocket(null)
+      }
+    }
+  },[authUser])
+
+  return <SocketContext.Provider value={{socket, onlineUsers}}>{children}</SocketContext.Provider>
+}
+
+```
+- I created a context with the name of SocketContext and exported it.
+
+- I create a hook to use the SocketContext. The hook will be called in other components.
+
+- Then i created SocketContextProvider function and it takes children as props.
+
+- I created socket and onlineUsers state.
+
+- From the useAuthContext hook i imported authUser state.
+
+- Inside the useEffect hook first i check if there is an authUser then i connect to the socket and in the connection i passed the authUserId as a query parameter that will be used by backend to connect socket id with it. 
+
+- Then i stored the socket inside the socket state. 
+
+- Then i connected to the socket listen for "getOnlineUsers" message. When the message is broadcast i receive the value and passed as a parameter of the callback and then inside the function i set it inside the onlineUsers state. 
+
+- Then i run the cleanup function. So when user is not in the page the socket connection will be closed. 
+
+- In the else block i check if there is a socket connection is on then i close it and set the socket state to null.
+
+- I added the authUser as a dependency of the useState so that whenever the authUser state will change the useEffect will run. 
+
+- At last i returned the socket and onlineUsers state as a value of the SocketContext Provider. 
+
+### Showing online user status
+
+- Now based on the user who are online i will show the online status icon in the ui.
+
+- For that go to the Conversation.jsx file and add following line in the file
+
+```javascript
+import { useSocketContext } from "../../context/SocketContext";
+
+
+  const { onlineUsers } = useSocketContext()
+
+  const isOnline = onlineUsers.includes(conversation._id)
+
+<div className={`avatar ${isOnline? "online" : "" }`}>
+```
+- The onlineUsers state is imported from the useSocketContext hook.
+
+- Then i check the onlineUsers state includes the conversation id of the user. This means the use is online and it is stored inside the isOnline variable. 
+
+- Then in the jsx i conditionally render the daisy ui online class. 
+
+- The full code will look like as follows
+
+```javascript
+import { useSocketContext } from "../../context/SocketContext";
+import useConversation from "../../zustand/useConversation";
+
+const Conversation = ({ conversation, emoji, lastIdx }) => {
+  const {selectedConversation, setSelectedConversation} = useConversation()
+
+  const isSelected = selectedConversation?._id === conversation._id
+
+  const { onlineUsers } = useSocketContext()
+
+  const isOnline = onlineUsers.includes(conversation._id)
+
+  return (
+    <>
+      <div className={`flex gap-2 items-center hover:bg-sky-500 rounded p-2 py-1 cursor-pointer
+				${isSelected ? "bg-sky-500" : ""}
+			`}
+				onClick={() => setSelectedConversation(conversation)}
+      >
+        <div className={`avatar ${isOnline? "online" : "" }`}>
+          <div className="w-12 rounded-full">
+            <img
+              src={conversation.profilePic}
+              alt="user avatar"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col flex-1">
+          <div className="flex gap-3 justify-between">
+            <p className="font-bold text-gray-200">{conversation?.fullName}</p>
+            <span className="text-xl">{emoji}</span>
+          </div>
+        </div>
+      </div>
+
+      {
+        !lastIdx ? (<div className="divider my-0 py-0 h-1" />) : ""
+      }
+    </>
+  );
+};
+export default Conversation;
+
+```
+
+- Now check by yourself that the online status is showing in the ui. 
+
+### Using hooks to get chat messages between users
+
+- Go to the hooks folder and create a new file with the name of useListenMessages.js and paste the following code 
+
+```javascript
+import { useEffect } from "react";
+
+import { useSocketContext } from "../context/SocketContext";
+import useConversation from "../zustand/useConversation";
+
+import notificationSound from "../assets/sounds/notification.mp3";
+
+const useListenMessages = () => {
+	const { socket } = useSocketContext();
+	const { messages, setMessages } = useConversation();
+
+	useEffect(() => {
+		socket?.on("newMessage", (newMessage) => {
+			newMessage.shouldShake = true;
+			const sound = new Audio(notificationSound);
+			sound.play();
+			setMessages([...messages, newMessage]);
+		});
+
+		return () => socket?.off("newMessage");
+	}, [socket, setMessages, messages]);
+};
+export default useListenMessages;
+```
+- I imported a notification sound from the sound folder which is located inside the assets folder. You also need to store notification sound over there. You can download it from the internet. 
+
+- I imported socket from useSocketContext hook and messages and setMessages from useConversation hook.
+
+- Inside the useEffect hook i connected socket to listen for newMessage. 
+
+- When a newMessage is broadcast from the server it is passed to the callback as an argument and inside teh function a new property with the name of shouldShake is added and its value is set to true. So when the the messages will be displayed in the ui the shaking class will be applied on it. 
+
+- Inside the sound variable notificationSound is stored. Then the sound is played.
+
+- Then newMessages is added at the bottom of messages array.
+
+- A clean up function is run at last. Without it the notification sound will play several times. 
+
+- The use effect has three dependencies socket, setMessages and messages. 
+
+### Calling useListenMessages hook inside the Messages component
+
+- Go to the Messages.jsx file and paste the following line to call the hook
+
+
+```javascript
+import useListenMessages from "../../hooks/useListenMessages";
+
+
+useListenMessages()
+```
+- Now open two browser window and login two user account and send message between them to make sure that the messages are receiving immediately or not. 
+
+### Shake animation for the new message
+
+- Go to the index.css file and paste the following css code for shake animation
+```javascript
+/* SHAKE ANIMATION ON HORIZONTAL DIRECTION */
+.shake {
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.2s both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
+@keyframes shake {
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
+}
+```
+
+### Preparing the project for deployment
+
+- We have to setup our server before deployment. We just cannot drag and drop. It will not work. 
+
+- Go to the server.js file and paste following code  
+
+```javascript
+import path from "path"
+
+const __dirname = path.resolve()
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")))
+
+app.get('*', (req, res) => {
+  res.send(path.join(__dirname, "frontend", "dist", "index.html"))
+})
+```
+
+- From node module i imported path that will be used later.
+
+- I created a variable with the name of __dirname. Inside it path.resolve() is a Node.js function that resolves the full path of a file or directory. When called without arguments, it returns the absolute path of the current working directory.
+
+- Then i used a middleware where static middleware from express is used and it is used to serve static files like html, css, js, image, sound files etc that we have in our frontend application. So it join the root path that we stored earlier inside the __dirname variable with the frontend folder and inside that dist folder. 
+
+- The app.get function make sure that if anyone hit a route except three api route that we created earlier will serve index.html file
+
+- Now go to the package.json file inside the root directory and paste following inside the script file
+
+```javascript
+ "scripts": {
+    "server": "nodemon backend/server.js",
+    "start": "node backend/server.js",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+  },
+```
+
+- The build script initially install necessary packages for the backend, then it will go to the frontend folder and look at package.json file and install necessary packages and last inside the frontend folder it will build. 
+
+- Now go to the terminal and make sure you are at the root and then paste the following code and hit enter.
+
+```javascript
+npm run build
+```
+
+- Then write following at the terminal and hit enter
+
+```javascript
+npm start
+```
+
+- Now open the browser at localhost 5000 because both the frontend and backend are running at the same port. Check whether you can login and chat at that port. 
+
+### Create a github repo
+
+- For deploying the project in render you will need a github repo. So create a github repo and push the project over there. 
+
+### Deploying the project in render
+
+- Go to the render.com
+
+- Create a free account if you do not have one. 
+
+- You should automatically redirected to the dashboard after signup. If not go to the dashboard. 
+
+- Click New button and inside it select Web Service.
+
+- Select Build and deploy from a Git repository and click Next. 
+
+- Connect your github account. Authorize render. 
+
+- Your repositories should shown. If shown select it otherwise copy the link of your repository and paste it inside the bottom input field and click continue button.
+
+- Keep the name and other field as it is. In the Build Command field change it from npm install to npm run build also change the Start Command from npm start to npm run start.
+
+- Select the free tire. 
+
+- Add the environment variables. 
+
+- Then create the "Create Web Service" button
+
+- After deployment at the top of the page you will get your website link. Copy it.
+
+- Go to the SocketContext.jsx file and change the url link from local host to live link.
+
+- Go to the socket.js file and inside the cors add the live link inside the array. 
+
+- Push the code in the github.
+
+- Go to the render site. Click Manual Deploy button and select Deploy latest commit. 
+
+- After deployment use the site. 
