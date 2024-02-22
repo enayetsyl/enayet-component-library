@@ -3535,6 +3535,7 @@ https://fandfchat.onrender.com/
 
 In conclusion, embarking on the journey to create a simple chat app has been an enriching experience. As a learner, I've gained valuable insights into the intricacies of app development, honed my problem-solving skills, and expanded my understanding of programming concepts. Through this project, I've come to appreciate the collaborative nature of software development and the boundless opportunities it presents for innovation and creativity. I hope this journey inspires others to dive into the world of app development and embark on their own path of discovery and learning.
 
+Get the article in README file => https://github.com/enayetsyl/enayet-component-library/blob/main/src/WebSocket/AsAProgrammer.md
 
 My Linkedin => https://www.linkedin.com/in/md-enayetur-rahman/
 
