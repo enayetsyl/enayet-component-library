@@ -1,4 +1,16 @@
-# Real Time Chat App with React and Node.js | JWT, Socket.io, MongoDB
+# "Building F&F Chat: A Comprehensive Guide to Creating a Real-Time Chat Application with React, Socket.IO, and Render"
+
+### Introduction:
+
+As a passionate learner diving into the world of software development, I recently embarked on a journey to create a simple chat app. This project served as an exciting opportunity for me to apply my burgeoning skills and delve deeper into the realm of app development. Along the way, I encountered challenges, made discoveries, and ultimately crafted a functional chat application. Now, I'm thrilled to share my experiences and learnings with fellow enthusiasts and aspiring developers.
+
+### Thing you will learn
+
+- By immersing oneself in the F&F Chat application and accompanying blog post, aspiring programmers can embark on a comprehensive journey through the realms of full-stack web development. On the frontend, the project harnesses the power of React, a popular JavaScript library for building user interfaces, alongside React Router DOM for efficient client-side routing. State management is facilitated by Zustand, offering a lightweight yet powerful solution for managing global application state. The frontend also incorporates various UI enhancements through libraries like React Icons and DaisyUI for sleek and responsive user interfaces. 
+
+- On the backend, Node.js and Express form the foundation of a robust server, while MongoDB with Mongoose provides seamless data storage and retrieval capabilities. Security features such as user authentication and authorization are implemented using JWT and bcrypt, ensuring secure communication and data integrity. Additional backend functionalities, including middleware for request parsing and environment variable management via dotenv, further enrich the development experience. 
+
+- By exploring this amalgamation of frontend and backend technologies, developers can gain invaluable insights into the intricacies of full-stack web development and hone their skills for building dynamic and scalable web applications.
 
 ### Useful links
 
@@ -8,81 +20,78 @@
 
 ### Parent folder added
 
-- Create a folder where you want to add your project and open it in vs code.
+- Create a folder for your project in the desired location and open it in VS Code.
 
-- Create two folder with the name of frontend and backend.
+- Within this folder, create two subfolders named "frontend" and "backend".
 
 ### Creating a react project
 
-- Open terminal and cd to frontend folder.
+- Open the terminal and navigate to the "frontend" folder.
 
-- Type following in the terminal and hit enter
+- Run the following command in the terminal:
 
 ```javascript
 npm create vite@latest .
 ```
 
-- It will start creating a react project in the inside the frontend folder. The dot indicate that the installation will be in the same folder.
+- This command initializes a new React project inside the "frontend" folder. The dot indicates that the installation will be in the current directory.
 
-- They will ask some question, select React as a framework and select Javascript as a variant.
+- Follow the prompts to select React as the framework and JavaScript as the variant.
 
-- Type following in the terminal and hit enter
+- After the initialization is complete, install dependencies by running the following command:
 
 ```javascript
 npm i
 ```
 
-- Then after installation complete type following in the terminal and hit enter
+- Once the installation is finished, start the development server by entering the following command in the terminal:
 
 ```javascript
 npm run dev
 ```
 
-- Open the link in the browser.
+- Open the provided link in your browser to view the React application.
 
 ### Creating a node project
 
 - We will install the node in the root folder not inside the backend folder. It will help us in deployment. We can run both frontend and backend from the root easily.
 
-- So in the terminal type following and hit enter
+- Navigate to the root folder by entering the following command in the terminal:
 
 ```javascript
 cd ..
 ```
 
-- It will take us to the root folder from the frontend folder. Then type following and hit enter
+- This command takes us from the frontend folder to the root folder.
+
+- Initialize a new Node.js project by running the following command:
 
 ```javascript
 npm init -y
 ```
 
-- Open the package.json folder and change the value of main property from index.js to server.js. Then inside the backend folder create a file name server.js
+- Open the package.json file and modify the value of the main property from index.js to server.js.
+
+- Inside the backend folder, create a file named server.js.
 
 ### Installing necessary packages for the server
 
-- Open the terminal and check that you are in the root of your project. Then type following and hit enter.
+- Install the required packages by entering the following command:
 
 ```javascript
 npm i express dotenv cookie-parser bcrypt mongoose socket.io jsonwebtoken nodemon
 ```
 
-- Express will be used to create server.
+- express: Used for creating the server.
+- dotenv: Utilized for reading data from the .env file.
+- cookie-parser: Used for parsing information from cookies.
+- bcrypt: Employed for password hashing.
+- mongoose: Used for database connection and model creation.
+- socket.io: Utilized for the chat app.
+- jsonwebtoken: Used for generating tokens.
+- nodemon: Automatically restarts the server whenever there are changes in the server.js file.
 
-- dotenv will be used for reading the .env file data.
-
-- cookie-parser will be used for reading the information from cookie.
-
-- bcrypt will be used for password hashing
-
-- mongoose will be used for database connection and model creation.
-
-- socket.io will be used for chat app
-
-- jsonwebtoken will be used for generating token.
-
-- nodemon will start server whenever there is any change in the server.js file.
-
-- Go to the package.json file and change following
+- Update the package.json file as follows:
 
 ```javascript
 "scripts": {
@@ -91,13 +100,13 @@ npm i express dotenv cookie-parser bcrypt mongoose socket.io jsonwebtoken nodemo
   "type": "module",
 ```
 
-- First one will make sure when you write "npm run server" in the terminal the server.js file inside the backend folder should open.
+- The first script ensures that running npm run server in the terminal opens the server.js file inside the backend folder.
 
-- The second one will convert the system from common.js to es6. So you can now use "import" word rather than "require" word. ALWAYS MAKE SURE TO WRITE FILE EXTENSION AFTER THE PATH/
+- The second script converts the system from CommonJS to ES6, allowing the use of import instead of require. Ensure to include the file extension after the path.
 
 ### Creating an express server
 
-- Inside the server.js file type following
+- Inside the server.js file  paste the following code:
 
 ```javascript
 import express from "express";
@@ -114,7 +123,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => console.log(`Server is Running on port ${PORT}`));
 ```
 
-- In the root create a file name .env and paste the following code in it.
+- Create a file named .env in the root directory and paste the following code into it:
 
 ```javascript
 PORT = 5000;
@@ -122,9 +131,11 @@ PORT = 5000;
 
 ### Creating routes folder and auth routes file.
 
-- Inside the backend folder create a folder with the name of routes. Inside it create a file name auth.routes.js. You can name it anything. But naming should be made in such a way so that by seeing it anyone can understand what the file is about. Here anyone can understand that this file is about auth and more specifically auth related routes.
+- Within the backend folder, create a folder named "routes".
 
-- Inside this file paste following code
+- Inside the "routes" folder, create a file named "auth.routes.js" (you can choose any name, but it should reflect the purpose of containing authentication-related routes).
+
+- Paste the following code into the "auth.routes.js" file:
 
 ```javascript
 import express from "express";
@@ -137,7 +148,7 @@ router.get("/login", (req, res) => {
 export default router;
 ```
 
-- Now go to the server.js file and paste following two lines
+- In the server.js file, add the following two lines:
 
 ```javascript
 import authRoutes from "./routes/auth.routes.js";
@@ -145,23 +156,31 @@ import authRoutes from "./routes/auth.routes.js";
 app.use("/api/auth", authRoutes);
 ```
 
-- So the explanation is as follows
+- Here's the explanation
 
-  - In the auth.routes.js file we imported express then initiated router function from the server.
-  - Then we created a get route with the name of login and a callback function. Later we will move the callback function to another file.
-  - At last we export the router so it can be used in other file. We will use it in server.js file now.
-  - In the server.js file we imported the authRoutes from auth.routes.js file and a middleware function is used here.
+  - In the auth.routes.js file, express is imported, and a router function is initiated.
+
+  - A GET route named "login" is created with a callback function. Later, the callback function will be moved to another file.
+
+  - The router is exported so it can be used in other files, like server.js.
+
+  - In the server.js file, the authRoutes from auth.routes.js are imported, and a middleware function is used.
+
   - In the browser the full route will be http://localhost:5000/api/auth/login
-  - If we create more route inside the auth.routes.js file then then the api/auth will automatically prefixed with it.
-  - Inside the auth.routes.js we can create get,post, patch, put, delete routes if necessary.
+
+  - If more routes are added inside auth.routes.js, they will automatically be prefixed with /api/auth.
+
+  - Inside auth.routes.js, you can create GET, POST, PATCH, PUT, DELETE routes if necessary.
 
 ### Creating a controller folder and file
 
 - For maintaining clean code, scalability and understandability we will separate the callback function of the route path that we watched earlier.
 
-- Inside the backend folder create a folder with the name of "controllers" and inside it create a file name auth.controller.js. This name will help us to understand that the file contains auth related controller(callback function) code.
+- Within the backend folder, create a folder named "controllers".
 
-- Write the following code inside it
+- Inside the "controllers" folder, create a file named "auth.controller.js" (this name indicates that the file contains authentication-related controller code).
+
+- Write the following code inside the "auth.controller.js" file:
 
 ```javascript
 export const login = (req, res) => {
@@ -176,41 +195,55 @@ import { login } from "../controllers/auth.controller.js";
 router.get("/login", login);
 ```
 
-- The code explanation is as follows
-  - Inside the auth.controller.js file we created a function with the name of login. At present inside it we send a message but later we will write full functionality inside it.
-  - Then we import the login function inside the auth.route.js file and inside the router.get we used callback function earlier now we put the login function here. So our functionality will remain same but code will be more readable.
+- Explanation of the code:
+  - Inside the auth.controller.js file, we've created a function named login. Currently, it sends a simple message, but later, we'll add the full functionality to it.
+
+  - Next, we import the login function from auth.controller.js into the auth.routes.js file.
+  
+  - In the router.get method, we replace the previous callback function with the login function. This maintains the same functionality while making the code more readable and organized.
 
 ### Creating workspace in postman
 
 - Open the postman app.
-- Click the workspace button then click Create Workspace button. Then click next button and then type the name of the project and click Create button.
-- Create a new collection and name it "AUTH".
-- Beside the collection name you will see three ... click it, a dropdown list will appear. Click Add Request. Rename it to SIGNUP. By default you see the GET method. Change it to POST method.
-- In the url link put the following url
+
+- Click the "Workspace" button, then select "Create Workspace".
+
+- Click "Next", then enter the name of the project and click "Create".
+
+- Create a new collection named "AUTH".
+
+- Next to the collection name, click the three dots (...), then select "Add Request".
+
+- Rename the request to "SIGNUP" and change the method from GET to POST.
+
+- Set the request URL to:
   http://localhost:5000/api/auth/signup
-- Click the Body tab and select raw radio tab and select JSON from the dropdown.
-- The setup is finished for now.
+
+- Click the "Body" tab, select the "raw" radio button, and choose "JSON" from the dropdown.
+
+The setup is now complete.
 
 ### Creating mongodb connection
 
-- Go to your mongodb account and create a user id and password and paste it in the .env file.
-- Copy the connection string from Database => Connect => Drivers. It will look like as follows
+- Go to your MongoDB account and create a user ID and password. Paste these credentials into the .env file.
+
+- Copy the connection string from your MongoDB account by navigating to Database -> Connect -> Drivers. The connection string will resemble the following:
 
 ```javascript
 mongodb+srv://<username>:<password>@cluster0.ktgpsav.mongodb.net/?retryWrites=true&w=majority
 ```
 
-- Paste it in the .env file as a value of MONGO_DB_URI property and replace the username and password with your username and password.
+- Paste the connection string in the .env file as the value of the MONGO_DB_URI property. Replace <username> and <password> with your actual username and password.
 
-- In the connection string after .net/ write your database name.
+- After .net/ in the connection string, write your database name.
 
-- The code in the .env file could look like as follow
+- The .env file should look like this:
 
 ```javascript
 mongodb+srv://FandFChat:qFy5dtjq25upW8qs@cluster0.ktgpsav.mongodb.net/FandFChat?retryWrites=true&w=majority
 ```
 
-- Inside the backend folder create a folder with the name of db and inside that create a file with the name of connectToMongoDb.js and paste the following code inside it.
+- Inside the backend folder, create a folder named db. Within that folder, create a file named connectToMongoDb.js, and paste the following code into it:
 
 ```javascript
 import mongoose from "mongoose";
@@ -227,7 +260,7 @@ export default connectToMongoDb;
 
 - Here we imported mongoose. The create a function to connect with mongoDB.
 
-- Then go to the server.js file and import connectToMongoDb function and call it inside the callback function of app.listen function. Your code will be look like as follows
+- In the server.js file, import the connectToMongoDb function and call it inside the callback function of the app.listen function:
 
 ```javascript
 import connectToMongoDb from "./db/connectToMongoDb";
@@ -240,9 +273,11 @@ app.listen(PORT, () => {
 
 ### Creating model for user
 
-- Inside the backend folder create a folder with the name of models and inside that create a file with the name of user.model.js. We will use that file for creating model for user.
+- Inside the backend folder, create a folder named models.
 
-- Paste the following code inside that file.
+- Within the models folder, create a file named user.model.js. This file will be used to define the model for the user.
+
+- Paste the following code inside the user.model.js file:
 
 ```javascript
 import mongoose from "mongoose";
@@ -279,28 +314,33 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 export default User;
 ```
+- Explanation:
+  
+  - We imported mongoose.
 
-- We imported mongoose.
-
-- We created userSchema and put our fields inside it.
-
-- For username property we made it unique.
-
-- For password we put condition that it must be minimum 6 characters.
-
-- For gender we have two certain values male and female so we used enum field. You can use it when you know earlier that you have some certain values.
-
-- For profilePic we have default value of empty string so that if user does not provide picture link there is no problem.
+  - We import mongoose to define the schema and model.
+  
+  - The userSchema contains fields such as fullName, username, password, gender, and profilePic.
+  
+  - The username field is marked as unique to ensure each username is unique.
+  
+  - The password field is set to have a minimum length of 6 characters.
+  
+  - The gender field uses an enum to restrict values to "male" or "female".
+  
+  - The profilePic field has a default value of an empty string.
+  
+  - We use timestamps: true to automatically add createdAt and updatedAt timestamps to the documents.
 
 ### Middleware to extract json data
 
-- Go to server.js file and type following middleware code inside it.
+- In the server.js file, add the following middleware code:
 
 ```javascript
 app.use(express.json());
 ```
 
-- It will parse data from json payload (which is req.body).
+- This middleware will parse data from the JSON payload (req.body).
 
 ### Getting image based on user name
 
@@ -308,9 +348,9 @@ app.use(express.json());
 
 https://avatar-placeholder.iran.liara.run/
 
-- Go to document section and over there go to "Avatar image based on username"
+- In the document section, navigate to "Avatar image based on username".
 
-- Copy the following link from it
+- Copy the following link provided:
 
 https://avatar.iran.liara.run/public/boy?username=[value]
 
@@ -376,47 +416,49 @@ export const signup = async (req, res) => {
 };
 ```
 
-- I imported bcrypt for password hash and User model.
+- I imported the necessary dependencies: bcrypt for password hash and User model.
 
-- I destructured { fullName, username, password, confirmPassword, gender } from request body that will be send from the frontend.
+- Request body parameters (fullName, username, password, confirmPassword, gender) are destructured from the incoming request.
 
-- Then i confirmed the password with the confirmPassword so if the frontend it compromised then it will be catch here and return from here.
+- Password confirmation is performed to ensure the entered passwords match.
 
-- Then i search our database based on username field.
+- A check is made to see if a user with the provided username already exists in the database.
 
 - If user already exist that means he want to signup for second time so return him from here.
 
 - If no user exist then i start processing of saving user information in the database.
 
-- I hashed the user password.
+- Password hashing is done using bcrypt.
 
-- Then i adjust the username in the link so that each user get a unique avatar image all time.
+- Avatar image URLs are generated dynamically based on the provided username
 
 - Then using mongoose model i created a newUser object for saving in the database.
 
-- In the new user object i added fullName, username, gender received from the frontend and in the place of password i added the hashed password instead of plain password and for profilePic i used conditional adding.
+- A new User object is created using the Mongoose model, with hashed password and dynamically generated profile picture URL.
 
-- Then i saved the newUser object in the database.
+- The new user is saved to the database.
 
-- At last i send response to the frontend with 201 status code and \_id, fullName, username and profilePic in an object.
+- If successful, a response with a status code of 201 (Created) is sent back to the frontend, containing the user's _id, fullName, username, and profilePic.
 
-- Inside the catch block i console log the error message and sent 500 error code together with Internal Server Error message in the front end.
+- Error handling is implemented, logging any errors and sending a 500 (Internal Server Error) response to the frontend in case of an error.
 
 - Now using postman you can send a post request and check whether the route is working.
 
 ### Generating token to verify user
 
-- Go to the backend folder and create a new folder with the name of utils and inside it create a file name generateToken.js
+- In the backend folder, create a new folder named utils.
 
-- Open the terminal and paste following code and hit enter
+- Inside the utils folder, create a file named generateToken.js.
+
+- Open the terminal and run the following command:
 
 ```javascript
 openssl rand -base64 32
 ```
 
-- You will get a new code in the terminal. Copy it and paste it inside the .env file with the name of JWT_SECRET
+- Copy the generated code and paste it inside the .env file with the name JWT_SECRET.
 
-- Go to the generateToken.js and paste the following code inside it.
+- Paste the following code inside the generateToken.js file:
 
 ```javascript
 import jwt from "jsonwebtoken";
@@ -440,9 +482,11 @@ export default generateTokenAndSetCookie;
 
 - I created a function and passed userId and res to it as argument.
 
-- Then i generating a token using userId, JWT_SECRET and kept it expire limit 15 days. You can increase or decrease it.
+- jwt.sign() generates a token using the userId and JWT_SECRET, with an expiration time of 15 days.
 
-- Then i set it inside cookies for maximum 15 days, and applied some security features to protect it from outside attack.
+- The token is set as a cookie in the response with a maximum age of 15 days.
+
+- Security features such as httpOnly and sameSite are applied to protect against XSS and CSRF attacks.
 
 ### Using token in the signup function
 
@@ -480,9 +524,13 @@ import { signup, login } from "../controllers/auth.controller.js";
 router.post("/login", login);
 ```
 
+- This code defines a new POST route for the /login endpoint, with the login function from the auth.controller.js file handling the request.
+
 ### Creating login Controller
 
-- Go to the auth.controller.js file and after the signup function paste the following code
+- Open the auth.controller.js file.
+
+- Locate the signup function and paste the provided code snippet below it.
 
 ```javascript
 export const login = async (req, res) => {
@@ -514,27 +562,29 @@ export const login = async (req, res) => {
 };
 ```
 
-- I create a asynchronous login function.
+- The function login is correctly defined as asynchronous (async).
 
-- I parsed username and password from req.body.
+- The username and password are extracted from the request body (req.body).
 
-- Then i searched the username in the database.
+- The user is queried from the database using the provided username.
 
-- Then i matched the user password with the database password using bcrypt.
+- Bcrypt is used to compare the provided password with the hashed password stored in the database.
 
-- Then i checked whether user is null or password does not match. If any one happen i return from here.
+- Proper error handling is implemented to handle cases where the user does not exist or the password is incorrect.
 
-- If everything is ok then i generate token and set it to cookie.
+- Upon successful authentication, a token is generated and set to the cookie.
 
-- At last i returned userId, fullName, username and profilePic as a response.
+- User information (ID, full name, username, profile picture) is returned as a response upon successful login.
 
-- If there is any error i console log it and send Internal Server Error to the front end.
+- Error logging and appropriate error responses are provided.
 
 - Using the postman you can check whether you can login or not.
 
 ### Logout functionality
 
-- Go to the auth.routes.js file and create a new route for logout. It will look like as follows
+- Open the auth.routes.js file.
+
+- Create a new route for logout:
 
 ```javascript
 import { login, logout, signup } from "../controllers/auth.controller.js";
@@ -542,7 +592,7 @@ import { login, logout, signup } from "../controllers/auth.controller.js";
 router.post("/logout", logout);
 ```
 
-- Then go to the auth.controller.js file and paste the following code.
+- Next, go to the auth.controller.js file and paste the following code for the logout function:
 
 ```javascript
 export const logout = (req, res) => {
@@ -556,19 +606,25 @@ export const logout = (req, res) => {
 };
 ```
 
-- I created a logout function.
+- The /logout route is correctly defined in the auth.routes.js file.
 
-- It set the maxAge of token to 0.
+- The logout function in the controller clears the JWT cookie by setting its maxAge to 0, effectively logging the user out.
 
-- It also send a message to frontend that logout is successful.
+- A success message is sent to the frontend upon successful logout.
 
-- In the catch block if there is any error is console log it and send error message to the frontend.
+- Error handling is implemented to catch and log any errors that may occur during the logout process.
+
+- Proper status codes (200 for success, 500 for internal server error) are returned.
 
 - Check it using postman.
 
 ### Creating message model
 
-- Go to the models folder and create a new file with the name of message.model.js. Paste following code to create a message model
+- Navigate to the models folder in your project.
+
+- Create a new file named message.model.js.
+
+- Paste the following code into the file to define the message model:
 
 ```javascript
 import mongoose from "mongoose";
@@ -598,7 +654,23 @@ const Message = mongoose.model("Message", messageSchema);
 export default Message;
 ```
 
+- The message model is defined using Mongoose schema.
+
+- Three fields are included in the schema: senderId, receiverId, and message.
+
+- Both senderId and receiverId are defined as ObjectId types, referencing the User model.
+
+- The message field is defined as a String type.
+
+- All fields are marked as required.
+
+- The timestamps: true option automatically adds createdAt and updatedAt fields to the document.
+
 ### Creating conversation schema
+
+- Create a new file named conversation.schema.js in your project's models folder.
+
+- Paste the following code into the file:
 
 ```javascript
 import mongoose from "mongoose";
@@ -627,9 +699,21 @@ const Conversation = mongoose.model("Conversation", conversationSchema);
 export default Conversation;
 ```
 
+- The conversation schema is defined using Mongoose schema.
+
+- Two fields are included in the schema: participants and messages.
+
+- participants is an array of ObjectId types, referencing the User model.
+
+- messages is an array of ObjectId types, referencing the Message model. It has a default value of an empty array.
+
+- The timestamps: true option automatically adds createdAt and updatedAt fields to the document.
+
 ### Creating message and users route
 
-- Go to the server.js file and create two new route for message and conversation. The code will be as follows
+- Open your server.js file.
+
+- Create routes for messages and users as follows:
 
 ```javascript
 import messageRoutes from "./routes/message.routes.js";
@@ -639,9 +723,11 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes)
 ```
 
-- Make sure you import the route path properly.
+- Ensure that you import the route paths correctly.
 
-- Now go the the routes folder and create a file name message.routes.js and paste the following code inside it
+- Now, navigate to the routes folder and create a new file named message.routes.js.
+
+- Paste the following code into message.routes.js:
 
 ```javascript
 import express from "express";
@@ -655,19 +741,21 @@ router.post("/send/:id", protectRoute, sendMessage);
 export default router;
 ```
 
-- Here i initiate the Router from express and kept it inside router variable.
+- The express.Router() is used to create a router instance for managing routes.
 
-- I created a new dynamic route for sending message based on user id.
+- A dynamic route /send/:id is created to send messages based on the user ID.
 
-- protectRoute is a middleware that check whether the person is trying to send message is a verified user. If he is verified then he can access the sendMessage controller function other wise not. The code for protectRoute will be shown in the next section.
+- The protectRoute middleware is applied to the /send/:id route to ensure that only verified users can access it.
 
-- Then we used sendMessage controller. The code will be shown later.
+- The sendMessage controller function is used to handle sending messages.
 
-- At last we export the router.
+- The router is exported for use in the application.
 
 ### Setting middleware at the backend
 
-- Go to the server.js file and call cookieParser as a middleware. It will help us to parse cookie that will be used in following section. The code will be as follows
+- Open your server.js file.
+
+- Call cookieParser as middleware to parse cookies:
 
 ```javascript
 import cookieParser from "cookie-parser";
@@ -675,7 +763,11 @@ import cookieParser from "cookie-parser";
 app.use(cookieParser());
 ```
 
-- Inside the backend folder create a folder with the name of middleware and inside it create a file with the name of protectRoute.js and paste the following code from it.
+- Create a new folder named middleware inside the backend folder.
+
+- Inside the middleware folder, create a new file named protectRoute.js.
+
+- Paste the following code into protectRoute.js:
 
 ```javascript
 import jwt from "jsonwebtoken"
@@ -710,7 +802,7 @@ const token = req.cookies.jwt;
 }
 ```
 
-- Here we imported jwt from json web token.
+- Here, we imported jwt from the JSON Web Token library."
 
 - Inside the try block first we parsed the logged in user token from the cookie.
 
@@ -720,19 +812,23 @@ const token = req.cookies.jwt;
 
 - If decoded token is not correct then we return from here.
 
-- If decoded token is correct then based on the userId inside the token we find out the user from database.
+- If the decoded token is correct, we retrieve the user's information from the database based on the user ID stored in the token.
 
 - If no user exist in database then i return from here.
 
 - If user is available then i add the user information without password as a property of req.
 
-- Then i call the next function so that for the verified user other server activities can be done. In our example the verified user can send and receive message.
+- Then, I call the next() function to allow other server activities to be performed for the verified user.
 
-- If there is any error the catch block will detect it and show in console and then send response to the frontend.
+- If an error occurs, the catch block will detect it, log it to the console, and send an appropriate response to the frontend.
 
 ### Creating send message controller
 
-- Go to the controllers folder and inside it message.controller.js file and paste the following code inside it
+- Navigate to the controllers folder in your project.
+
+- Inside the controllers folder, create a new file named message.controller.js.
+
+- Paste the provided code into message.controller.js:
 
 ```javascript
 const sendMessage = async (req, res) => {
@@ -774,23 +870,25 @@ const sendMessage = async (req, res) => {
 
 - I also extracted sender id from req.user._id. In the protectRoute middleware function the user info stored inside req.
 
-- Based on the sender and receiver id i searched the database to find out whether there is any existing conversation between them.
+- Based on the sender and receiver IDs, I searched the database to determine whether there is an existing conversation between them.
 
-- If there is no conversation between them is create a conversation in the database.
+- If there is no existing conversation between them, a new conversation is created in the database.
 
-- Then i created a new message and pushed its id in conversation.message.
+- Then, I created a new message and added its ID to the conversation's messages array.
 
-- I then parallelly save the conversation and new message to the database.
+- I then save the conversation and new message to the database in parallel.
 
-- At last i send the newMessage to the frontend.
+- Finally, I send the new message to the frontend.
 
-- In the catch block i showed error in the console log and send error message to the frontend.
+- In the catch block, I log any errors to the console and send an error message to the frontend.
 
 - Now check whether you can send message using postman.
 
 ### Creating get message controller
 
-- Go to the message.controller.js file and below sendMessage controller function paste the following code
+- Navigate to the message.controller.js file.
+
+- Below the sendMessage controller function, paste the following code:
 
 ```javascript
 export const getMessage = async (req, res) => {
@@ -816,23 +914,25 @@ export const getMessage = async (req, res) => {
 };
 ```
 
-- From req.param i extracted id of user with whom our sender is chating.
+- From req.params, I extracted the ID of the user with whom our sender is chatting.
 
-- Then from req.user i extracted sender id.
+- Then, I extracted the sender's ID from req.user.
 
-- Based on both id i searched the database to find conversation between them. In the database conversation array only contains the message id. So using populate function i asked mongodb to provide me the actual message instead of message id.
+- Based on both IDs, I searched the database to find the conversation between them.
 
-- If no conversation found between them then send empty array.
+-  Using the populate function, I asked MongoDB to provide me with the actual message instead of the message ID.
 
-- If conversations found then i send all the messages to the frontend.
+- If no conversation is found between them, an empty array is sent.
+
+- If a conversation is found, all the messages are sent to the frontend.
 
 - Check them using postman.
 
 ### Installing tailwind at frontend
 
-- Go to the terminal and cd to frontend folder
+- Navigate to the frontend folder:
 
-- Run the development server to ensure everything is ok.
+- Open your terminal and change directory to your frontend folder where your package.json file is located.
 
 - Make sure you are in frontend folder. Open the terminal and paste the following code
 
@@ -841,7 +941,7 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-- Go to the tailwind.config.js file and paste the following code.
+- Open the tailwind.config.js file and replace its contents with the following code:
 
 ```javascript
 /** @type {import('tailwindcss').Config} */
@@ -854,7 +954,7 @@ export default {
 };
 ```
 
-- Go to the index.css file and paste the following code and delete everything else.
+- Open the index.css file (or any other main CSS file in your project) and replace its contents with the following code:
 
 ```javascript
 @tailwind base;
@@ -862,15 +962,17 @@ export default {
 @tailwind utilities;
 ```
 
+- Run the development server to ensure everything is ok.
+
 ### Installation of daisy.ui
 
-- Open the terminal of be at the frontend folder and paste following code at the terminal.
+- Open your terminal in the frontend folder and run the following command:
 
 ```javascript
 npm i -D daisyui@latest
 ```
 
-- Go to the tailwind.config.js file and paste the following code
+- Open the tailwind.config.js file and update the plugins section to include Daisy UI:
 
 ```javascript
 /** @type {import('tailwindcss').Config} */
@@ -883,7 +985,7 @@ export default {
 };
 ```
 
-- Go to the app.jsx file and delete everything and paste the following code
+- Open the App.jsx file (or your main component file) and replace its contents with the following code:
 
 ```javascript
 function App() {
@@ -903,25 +1005,27 @@ function App() {
 export default App;
 ```
 
-- In the ui if you should see button like as follows
+- Run your development server and verify that the buttons render correctly with the Daisy UI styles.
+
+If everything is set up correctly, you should see buttons styled as shown in the provided image.
   ![button](/public/button.png)
 
-- If everything is ok you can delete the buttons.
+- Once you have confirmed that Daisy UI is working as expected, you can delete the sample buttons from your App.jsx file.
 
 ### Installing necessary packages for frontend
 
-- Now we will install react icons and for that open the terminal and check that you are in the frontend folder and paste following and hit enter
+- Now we will install react icons and for that open your terminal and make sure you are in the frontend folder. Then, run the following command:
 
 ```javascript
 npm install react-icons --save
 ```
 
-- Now we will install react hot toast and for that open the terminal and check that you are in the frontend folder and paste following and hit enter
+- Now we will install react hot toast and for that open your terminal and make sure you are in the frontend folder. Then, run the following command:
 
 ```javascript
 npm install react-hot-toast
 ```
-- Go to the App.jsx file and import toaster and put the toaster component at the bottom as follows
+- Open the App.jsx file and add the <Toaster /> component from react-hot-toast at the bottom of the file:
 
 ```javascript
 import { Toaster } from 'react-hot-toast'
@@ -943,7 +1047,7 @@ export default App;
 
 - Now we will use zustand for global state management. 
 
-- Go to the terminal and make sure you are in the frontend folder and paste the following code and hit enter
+- Run the following command in the terminal to install Zustand:
 
 ```javascript
 npm install zustand
@@ -951,7 +1055,7 @@ npm install zustand
 
 - Now i will install socket for client side for chat. 
 
-- Go to the terminal and make sure you are in the frontend folder and paste the following code and hit enter
+- Run the following command in the terminal
 
 ```javascript
 npm i socket.io-client
@@ -959,7 +1063,7 @@ npm i socket.io-client
 
 ### Setting the background image for whole app
 
-- Go to the app.css file and paste the following code
+- Open the app.css file in your project and add the following CSS code:
 
 ```javascript
 body{
@@ -971,12 +1075,21 @@ body{
 }
 ```
 
-- Make sure in the public folder you have an image with the name of bg. If you have different image extension than jpg put that in the url.
+- Make sure you have an image named bg.jpg in the public folder of your project. If you have a different image file or format, adjust the filename accordingly in the CSS code.
+
+- This CSS code sets the background image for the body element, adds a linear gradient overlay for better contrast, ensures the image covers the entire viewport, and fixes the background position.
+
+- Save your changes and run your development server. Open your app in the browser and verify that the background image is displayed as expected.
 
 ### Creating a folder structure
 
-- Inside the src folder create a folder named pages and inside that create three folder home, login and signup and create jsx file inside it.
-- Inside the src folder create a folder named components.
+- Inside the src folder, create a new folder named pages.
+
+- Inside the pages folder, create three new folders: home, login, and signup.
+
+- Inside each of the home, login, and signup folders, create a new JSX file. You can name these files according to the component they represent, such as Home.jsx, Login.jsx, and Signup.jsx.
+
+- Back in the src folder, create a new folder named components.
 
 ### Designing the login page
 
@@ -1395,7 +1508,7 @@ export default MessageInput;
 
 ### Designing scrollbar of message component
 
-- Go to the index.css file and paste following code. It will make a nice looking scroll bar.
+- Open the index.css file and paste following code. It will make a nice looking scroll bar.
 
 ```javascript
 ::-webkit-scrollbar {
@@ -1441,7 +1554,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 );
 ```
 
-- I imported BrowserRouter from react router dom and then wrap the app component by the BrowserRouter component.
+- I imported BrowserRouter from react router dom and then wrap the app component with the BrowserRouter component.
 
 - Then go to the App.jsx file and paste the following code
 
@@ -1469,13 +1582,15 @@ export default App;
 
 - The new addition in the component is the import of Route and Routers.
 
-- I also defied the path for Home, Login and Signup component and call the page here inside Route component.
+- I also defined the path for Home, Login and Signup component and call the page here inside Route component.
+
+
 
 ### Changing port to 3000 for frontend
 
 - Go to the vite.config.js file and after plugins create a new property with the name of server and inside it create a property with the name of port and provide its value 3000.
 
-- Now check the browser whether your project is running at 3000 port.
+- Now check the browser to see if your project is running on port 3000.
 
 - Full code inside vite.config.js file will look likes as follows
 
@@ -1541,7 +1656,7 @@ import { Link } from "react-router-dom";
 </Link>;
 ```
 
-- Now check the browser whether you can toggle between login and signup page.
+- Now check the browser to see if you can toggle between the login and signup pages.
 
 ### Getting form data from the signup page
 
@@ -1570,7 +1685,7 @@ const handleSubmit = (e) => {
 
 - handleCheckboxChange function will get the value of gender from the checkbox and put it inside the inputs.
 
-- handleSubmit function will take the form value for now and console log it. Later we will post data to the backend.
+- handleSubmit function will take the form value for now and console log it. Later, we will post the data to the backend.
 
 - Import following.
 
@@ -1772,11 +1887,15 @@ function handleInputErrors({ fullName, username, password, confirmPassword, gend
 
 - Then i declared a asynchronous signup function that takes fullName, username, password, confirmPassword, gender as a props which comes from input state of signup page. 
 
-- Then i called the handleInputErrors function and passed the props to it to check whether everything is ok. We will discuss about it later. 
+- Then i called the handleInputErrors function is a helper function used to validate form inputs. I passed the props to it to check whether everything is ok. We will discuss about it later. 
 
 - If error found then the function returns from here. 
 
-- If everything ok then loading state set to true and a post request send to the backend. In the url full url is not mentioned. for that you need to configuare vite.config.js file. Go to that file and paste following code inside it
+- If everything ok then loading state set to true and a post request send to the backend.
+
+- The loading state is used to indicate whether the signup process is in progress, which can be helpful for displaying loading spinners or disabling form inputs during the process.
+ 
+- In the url full url is not mentioned. for that you need to configure vite.config.js file. Go to that file and paste following code inside it
 
 ```javascript
 import { defineConfig } from "vite";
@@ -1879,6 +1998,8 @@ export default App;
 
 - Inside the route component i applied conditional rendering.
 
+- Navigate is used from React Router to perform redirection.
+
 - In the home route if auth user is available then he can access the home route otherwise will be navigate to login page. 
 
 - In the login route if auth user is not available then he can access the login route otherwise will be navigate to home page. 
@@ -1900,6 +2021,8 @@ export default App;
 {loading ? <span className='loading loading-spinner'></span> : "Sign Up"}
 </button>
 ```
+
+- The loading state is derived from the useSignup hook, which was previously implemented to handle signup functionality and manage the loading state.
 
 - If the loading state is true the button will be disabled and show a spinner.
 
@@ -1949,6 +2072,7 @@ return {logout, loading}
 
 export default useLogout
 ```
+- The useLogout hook is used to handle the logout process, including making a request to the backend API to log out the user and updating the authentication state.
 
 - I set loading state and imported setAuthUser from authContext. 
 
@@ -1968,9 +2092,11 @@ export default useLogout
 
 - Now go to the LogoutButton component and import loading state and logout function using useLogout hook. 
 
-- Inside the logout button set the logout function as a handler of onClick.
+- Inside the logout button, set the logout function as the onClick handler.
 
-- At last i used loading state to show logout button if loading is false and spinner if it is true. 
+- At last i Use the loading state to conditionally render either the logout button or a spinner.
+
+- With these changes, the logout functionality will be implemented with proper loading feedback for the user
 
 ### Setting login functionality
 
@@ -2163,7 +2289,7 @@ const useLogin = () => {
 export default useLogin
 
 const handleErrorInput = (username, password) => {
-  if(!username, !password){
+  if(!username || !password){
     toast.error("Please fill in all the fields")
     return false
   }
@@ -2470,13 +2596,13 @@ export default Conversation;
 
 - isSelected variable is true if the id inside selectedConversation and conversation match. It will be used in the div to change its background color.
 
-- onClick handler is attached to the parent div to set the conversation in hte selectedConversation state. 
+- onClick handler is attached to the parent div to set the conversation in the selectedConversation state. 
 
 - profilePic inside conversation state is set as a source of image tag.
 
 - Username and emoji is set in the respective fields.
 
-- At last horizontal scroll bar i removed for the last item. 
+- Finally, the horizontal scroll bar is removed for the last item. 
 
 ### Message Container ui setup
 
@@ -2531,9 +2657,9 @@ const NoChatSelected = () => {
 	);
 };
 ```
-- From zustand useConversation function  i imported selectedConversation and setSelectedConversation. 
+- I imported selectedConversation and setSelectedConversation from the Zustand useConversation function. 
 
-- I called an useEffect hook to unmount the selectedConversation state. 
+- I used a useEffect hook to handle unmounting of the selectedConversation state.
 
 - If selectedConversation state has a value then header will show otherwise NoChatSelected component will render.
 
@@ -2596,7 +2722,7 @@ export default useSendMessage
 
 - Inside the fetch i hit the send route and pass the receiver id as params and post message to the route.
 
-- If any error received i throw it.
+- If any error received, i throw it.
 
 - Using setMessage function i set the new message int he messages together with earlier messages. 
 
@@ -2648,7 +2774,7 @@ export default MessageInput;
 
 - If message state store any value then it call the sendMessage function and pass message as a parameter. 
 
-- At last the message state set to empty.
+- Finally the message state set to empty.
 
 - handleSubmit function is set as an onSubmit handler in the form tag.
 
@@ -3022,7 +3148,7 @@ export {app,io, server}
 
 - I created a http server and pass express server to it and store it inside server variable.
 
-- In the io variable i create a new server and passed the earlier created server to it. As socket provide some error so i added cors inside and object and cors value is also an object. It has origin property and it takes an array of url. At present we have localhost 3000. The methods property has get and post inside an array.
+- In the io variable i create a new server and passed the earlier created server to it. Since sockets may provide some errors, I added CORS inside an object, and the CORS value is also an object. It has origin property and it takes an array of url. At present we have localhost 3000. The methods property has get and post inside an array.
 
 - The getReceiverSocketId is a function that takes receiverId and return the socket Id. It will be required when we will send message to the user. 
 
@@ -3036,11 +3162,11 @@ export {app,io, server}
 
 - Then io.emit broadcast to every user that those who are online and send the keys of userSocketMap that contains userId.
 
-- For disconnecting again i used socket.on and a string "disconnect". Then a callback is used that console log a messaged an show the socket id of user who disconnected.
+- For disconnecting, I used socket.on and listened for the event string 'disconnect'. Then a callback is used that console log a messaged an show the socket id of user who disconnected.
 
 - Then the person who has been disconnected his id has been deleted from the userSocketMap
 
-- Then io.emit broadcast to every user that those who are online and send the keys of userSocketMap that contains userId.
+- Then io.emit broadcasts to every user to show those who are online and sends the keys of userSocketMap that contain userIds.
 
 - At last i exported the app, io and server so that they can be used in our file as well.
 
@@ -3275,7 +3401,7 @@ useListenMessages()
 
 ### Shake animation for the new message
 
-- Go to the index.css file and paste the following css code for shake animation
+- Open the index.css file and paste the following css code for shake animation
 ```javascript
 /* SHAKE ANIMATION ON HORIZONTAL DIRECTION */
 .shake {
@@ -3327,15 +3453,15 @@ app.get('*', (req, res) => {
 })
 ```
 
-- From node module i imported path that will be used later.
+- We import the path module from node, which we'll use later.
 
 - I created a variable with the name of __dirname. Inside it path.resolve() is a Node.js function that resolves the full path of a file or directory. When called without arguments, it returns the absolute path of the current working directory.
 
 - Then i used a middleware where static middleware from express is used and it is used to serve static files like html, css, js, image, sound files etc that we have in our frontend application. So it join the root path that we stored earlier inside the __dirname variable with the frontend folder and inside that dist folder. 
 
-- The app.get function make sure that if anyone hit a route except three api route that we created earlier will serve index.html file
+- The app.get function ensures that any route, except the three API routes we created earlier, serves the index.html file.
 
-- Now go to the package.json file inside the root directory and paste following inside the script file
+- Now, in the package.json file at the root directory, add the following scripts:
 
 ```javascript
  "scripts": {
@@ -3345,58 +3471,75 @@ app.get('*', (req, res) => {
   },
 ```
 
-- The build script initially install necessary packages for the backend, then it will go to the frontend folder and look at package.json file and install necessary packages and last inside the frontend folder it will build. 
+- The build script first installs the necessary packages for the backend. Then it goes to the frontend folder, installs necessary packages mentioned in its package.json file, and finally builds the frontend application.
 
-- Now go to the terminal and make sure you are at the root and then paste the following code and hit enter.
+- In the terminal, navigate to the root directory and execute the following command:
 
 ```javascript
 npm run build
 ```
 
-- Then write following at the terminal and hit enter
+- Then, start the server by running:
 
 ```javascript
 npm start
 ```
 
-- Now open the browser at localhost 5000 because both the frontend and backend are running at the same port. Check whether you can login and chat at that port. 
+- Now, open your browser and navigate to localhost:5000. Since both the frontend and backend are running on the same port, you should be able to log in and start chatting.
 
 ### Create a github repo
 
-- For deploying the project in render you will need a github repo. So create a github repo and push the project over there. 
+- Create a GitHub repository for deploying the project on Render. Push the project to the GitHub repository.
 
 ### Deploying the project in render
 
 - Go to the render.com
 
-- Create a free account if you do not have one. 
+- Create a free account if you do not have one already.
 
-- You should automatically redirected to the dashboard after signup. If not go to the dashboard. 
+- You should be automatically redirected to the dashboard after signing up. If not, navigate to the dashboard manually. 
 
-- Click New button and inside it select Web Service.
+- Click on the "New" button and select "Web Service" from the options.
 
-- Select Build and deploy from a Git repository and click Next. 
+- Choose "Build and deploy from a Git repository" and click "Next".
 
-- Connect your github account. Authorize render. 
+- Connect your GitHub account and authorize Render.
 
-- Your repositories should shown. If shown select it otherwise copy the link of your repository and paste it inside the bottom input field and click continue button.
+- Your repositories should be displayed. If they are, select yours; if not, copy the link to your repository and paste it into the bottom input field. Then, click the "Continue" button.
 
-- Keep the name and other field as it is. In the Build Command field change it from npm install to npm run build also change the Start Command from npm start to npm run start.
+- Keep the name and other fields as they are. In the "Build Command" field, change it from "npm install" to "npm run build", and also change the "Start Command" from "npm start" to "npm run start".
 
 - Select the free tire. 
 
 - Add the environment variables. 
 
-- Then create the "Create Web Service" button
+- Then, click the "Create Web Service" button.
 
-- After deployment at the top of the page you will get your website link. Copy it.
+- After deployment, at the top of the page, you will find your website link. Copy it.
 
-- Go to the SocketContext.jsx file and change the url link from local host to live link.
+- Go to the SocketContext.jsx file and change the URL link from "localhost" to the live link.
 
-- Go to the socket.js file and inside the cors add the live link inside the array. 
+- In the socket.js file, add the live link to the CORS array.
 
 - Push the code in the github.
 
-- Go to the render site. Click Manual Deploy button and select Deploy latest commit. 
+- Go back to the Render website. Click the "Manual Deploy" button and select "Deploy latest commit".
 
-- After deployment use the site. 
+-After deployment, you can use the site 
+
+### Live site link
+
+https://fandfchat.onrender.com/
+
+### Conclusion
+
+In conclusion, embarking on the journey to create a simple chat app has been an enriching experience. As a learner, I've gained valuable insights into the intricacies of app development, honed my problem-solving skills, and expanded my understanding of programming concepts. Through this project, I've come to appreciate the collaborative nature of software development and the boundless opportunities it presents for innovation and creativity. I hope this journey inspires others to dive into the world of app development and embark on their own path of discovery and learning.
+
+
+My Linkedin => https://www.linkedin.com/in/md-enayetur-rahman/
+
+My Facebook => https://www.facebook.com/profile.php?id=100094416483981
+
+My Twitter => https://twitter.com/enayetu_syl
+
+My Github => https://github.com/enayetsyl
