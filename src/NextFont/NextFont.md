@@ -208,7 +208,7 @@ As you continue to develop and refine your Next.js applications, remember that f
 Thank you for joining us on this font customization journey with Next.js. We hope this guide has equipped you with the skills and inspiration to create beautiful and engaging web experiences. Happy coding!
 
 
-Get the article in README file => 
+Get the article in README file => https://github.com/enayetsyl/enayet-component-library/blob/main/src/NextFont/NextFont.md
 
 My Linkedin => https://www.linkedin.com/in/md-enayetur-rahman/
 
