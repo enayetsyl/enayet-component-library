@@ -21,3 +21,4 @@ Following components are available for copy
 18. Basic infinite scroll md file.
 19. Tanstack infinite scroll md file. 
 20. Jwt token verification, admin verification, role based private route implementation.
+21. Gradient button added.
