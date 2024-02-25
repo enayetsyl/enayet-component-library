@@ -28,3 +28,5 @@ Following components are available for copy
 25. Glowing text effect.
 26. Text Animation.
 27. Animation background.
+28. Moving search icon.
+29. Card Hover Animation.

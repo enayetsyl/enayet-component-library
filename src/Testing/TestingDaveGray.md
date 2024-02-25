@@ -1050,21 +1050,3 @@ describe('TodoList', () => {
 - The third and last test check whether the todos are render in correct order. Initially we render the TodoList components with todos and setTodos. In the action part we searched using getAllByTestId and the testId value is "todo-item" and the first one is stored in firstItem variable. Then in the assertion we passed the firstItem variable inside the expect function and expect "Get Coffee ☕☕☕" as a result. 
 
 
-
-
-
-```javascript
-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
-```
-```javascript
-
-```
-```javascript
-
-```
-```javascript
-
-```
-```javascript
-
-```
