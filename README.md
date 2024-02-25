@@ -24,4 +24,6 @@ Following components are available for copy
 21. Gradient button added.
 22. Animated Border.
 23. Button Neumorphism Effect.
-24. Text Reflection Effect
+24. Text Reflection Effect.
+25. Glowing text effect.
+26. Text Animation
