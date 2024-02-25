@@ -26,4 +26,5 @@ Following components are available for copy
 23. Button Neumorphism Effect.
 24. Text Reflection Effect.
 25. Glowing text effect.
-26. Text Animation
+26. Text Animation.
+27. Animation background.
