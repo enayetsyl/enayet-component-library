@@ -30,3 +30,4 @@ Following components are available for copy
 27. Animation background.
 28. Moving search icon.
 29. Card Hover Animation.
+30. Bulb on and off.
