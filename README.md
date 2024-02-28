@@ -35,3 +35,6 @@ Following components are available for copy
 32. Shape design. https://www.facebook.com/photo/?fbid=251274758029739&set=a.251274811363067
 33. CircleAnimation for loading. https://youtu.be/KKckNXripmw
 34. Moving car animation. https://youtu.be/IdcE-XL9t0A
+35. Random quote generation and modal shows after intervals. 
+36. Moveable Button.
+37. Login or signup page with moveable button.
